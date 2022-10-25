@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="kr">
+<script src="http://code.jquery.com/jquery-latest.js"></script>
 <head>
     <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
     <meta charset="utf-8"/>
@@ -35,15 +36,67 @@
 <!-- Masthead-->
 <header class="masthead">
     <div class="container px-4 px-lg-5 h-100">
-        <div class="row gx-4 gx-lg-5 h-100 align-items-center justify-content-center text-center">
+        <div class="row gx-4 gx-lg-5 h-100 align-items-center justify-content-center text-center" id="first_div">
             <div class="col-lg-8 align-self-end">
                 <h1 class="text-white font-weight-bold">쉽고 빠른 매물검색!</h1>
                 <hr class="divider"/>
             </div>
             <div class="col-lg-8 align-self-baseline">
                 <p class="text-white-75 mb-5">누구나 쉽고, 편리하게 확인할 수 있는 법원 경매 매물!</p>
-                <a class="btn btn-primary btn-xl">시작하기!</a>
+                <a class="btn btn-primary btn-xl button-select" id="start">시작하기!</a>
             </div>
+        </div>
+        <div class="row gx-4 gx-lg-5 h-100 align-items-center justify-content-center text-center" id="second_div"
+             style="display: none">
+            <div class="col-lg-8 align-self-end">
+                <h1 class="text-white font-weight-bold">매물 검색방식을 선택해주세요.</h1>
+                <hr class="divider"/>
+            </div>
+            <div class="col-lg-8 align-self-baseline button-padding">
+                <p class="text-white-75 mb-5"></p>
+                <a class="btn btn-primary btn-xl button-select" id="nearby">지역별검색</a>
+                <a class="btn btn-primary btn-xl button-select" id="address">주소지검색</a>
+            </div>
+        </div>
+        <div class="row gx-4 gx-lg-5 h-75 justify-content-center text-center" id="nearby_div" style="display: none">
+            <div class="col-lg-8 align-self-center">
+                <h1 class="text-white font-weight-bold">지역을 선택해주세요.</h1>
+                <hr class="divider"/>
+            </div>
+            <table>
+                <tbody id="nearby_tb" class="align-baseline">
+                <tr>
+                    <td><a class="btn btn-primary btn-xl button-select">서울</a></td>
+                    <td><a class="btn btn-primary btn-xl button-select">부산</a></td>
+                    <td><a class="btn btn-primary btn-xl button-select">대구</a></td>
+                </tr>
+                <tr>
+                    <td><a class="btn btn-primary btn-xl button-select">인천</a></td>
+                    <td><a class="btn btn-primary btn-xl button-select">광주</a></td>
+                    <td><a class="btn btn-primary btn-xl button-select">대전</a></td>
+                </tr>
+                <tr>
+                    <td><a class="btn btn-primary btn-xl button-select">울산</a></td>
+                    <td><a class="btn btn-primary btn-xl button-select">세종</a></td>
+                    <td><a class="btn btn-primary btn-xl button-select">경기</a></td>
+                </tr>
+                <tr>
+                    <td><a class="btn btn-primary btn-xl button-select">강원</a></td>
+                    <td><a class="btn btn-primary btn-xl button-select">충북</a></td>
+                    <td><a class="btn btn-primary btn-xl button-select">충남</a></td>
+                </tr>
+                <tr>
+                    <td><a class="btn btn-primary btn-xl button-select">전북</a></td>
+                    <td><a class="btn btn-primary btn-xl button-select">전남</a></td>
+                    <td><a class="btn btn-primary btn-xl button-select">경북</a></td>
+                </tr>
+                <tr>
+                    <td><a class="btn btn-primary btn-xl button-select">경남</a></td>
+                    <td><a class="btn btn-primary btn-xl button-select">제주</a></td>
+                </tr>
+
+                </tbody>
+            </table>
         </div>
     </div>
 </header>
