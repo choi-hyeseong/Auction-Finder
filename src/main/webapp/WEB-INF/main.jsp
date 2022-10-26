@@ -54,7 +54,7 @@
             </div>
             <div class="col-lg-8 align-self-baseline button-padding">
                 <p class="text-white-75 mb-5"></p>
-                <a class="btn btn-primary btn-xl button-select" id="nearby">지역별검색</a>
+                <a class="btn btn-primary btn-xl button-select" id="nearby" style="margin-left: 1.5rem; margin-right: 1.5rem">지역별검색</a>
                 <a class="btn btn-primary btn-xl button-select" id="address">주소지검색</a>
             </div>
         </div>
@@ -66,33 +66,33 @@
             <table>
                 <tbody id="nearby_tb" class="align-baseline">
                 <tr>
-                    <td><a class="btn btn-primary btn-xl button-select">서울</a></td>
-                    <td><a class="btn btn-primary btn-xl button-select">부산</a></td>
-                    <td><a class="btn btn-primary btn-xl button-select">대구</a></td>
+                    <td><a class="btn btn-primary btn-xl button-select button-province">서울</a></td>
+                    <td><a class="btn btn-primary btn-xl button-select button-province">부산</a></td>
+                    <td><a class="btn btn-primary btn-xl button-select button-province">대구</a></td>
                 </tr>
                 <tr>
-                    <td><a class="btn btn-primary btn-xl button-select">인천</a></td>
-                    <td><a class="btn btn-primary btn-xl button-select">광주</a></td>
-                    <td><a class="btn btn-primary btn-xl button-select">대전</a></td>
+                    <td><a class="btn btn-primary btn-xl button-select button-province">인천</a></td>
+                    <td><a class="btn btn-primary btn-xl button-select button-province">광주</a></td>
+                    <td><a class="btn btn-primary btn-xl button-select button-province">대전</a></td>
                 </tr>
                 <tr>
-                    <td><a class="btn btn-primary btn-xl button-select">울산</a></td>
-                    <td><a class="btn btn-primary btn-xl button-select">세종</a></td>
-                    <td><a class="btn btn-primary btn-xl button-select">경기</a></td>
+                    <td><a class="btn btn-primary btn-xl button-select button-province">울산</a></td>
+                    <td><a class="btn btn-primary btn-xl button-select button-province">세종</a></td>
+                    <td><a class="btn btn-primary btn-xl button-select button-province">경기</a></td>
                 </tr>
                 <tr>
-                    <td><a class="btn btn-primary btn-xl button-select">강원</a></td>
-                    <td><a class="btn btn-primary btn-xl button-select">충북</a></td>
-                    <td><a class="btn btn-primary btn-xl button-select">충남</a></td>
+                    <td><a class="btn btn-primary btn-xl button-select button-province">강원</a></td>
+                    <td><a class="btn btn-primary btn-xl button-select button-province">충북</a></td>
+                    <td><a class="btn btn-primary btn-xl button-select button-province">충남</a></td>
                 </tr>
                 <tr>
-                    <td><a class="btn btn-primary btn-xl button-select">전북</a></td>
-                    <td><a class="btn btn-primary btn-xl button-select">전남</a></td>
-                    <td><a class="btn btn-primary btn-xl button-select">경북</a></td>
+                    <td><a class="btn btn-primary btn-xl button-select button-province">전북</a></td>
+                    <td><a class="btn btn-primary btn-xl button-select button-province">전남</a></td>
+                    <td><a class="btn btn-primary btn-xl button-select button-province">경북</a></td>
                 </tr>
                 <tr>
-                    <td><a class="btn btn-primary btn-xl button-select">경남</a></td>
-                    <td><a class="btn btn-primary btn-xl button-select">제주</a></td>
+                    <td><a class="btn btn-primary btn-xl button-select button-province">경남</a></td>
+                    <td><a class="btn btn-primary btn-xl button-select button-province">제주</a></td>
                 </tr>
 
                 </tbody>
