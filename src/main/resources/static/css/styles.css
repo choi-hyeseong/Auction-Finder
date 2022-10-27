@@ -2155,7 +2155,8 @@ header.masthead .h1, header.masthead h1 {
 .button-city-big {
     width: 120pt;
     height: 50pt;
-    font-size: 11pt
+    font-size: 10pt;
+    white-space: nowrap;
 }
 .button-select {
     background-color: rgba(70,86,102, 0.7);
