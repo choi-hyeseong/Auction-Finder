@@ -109,4 +109,5 @@ function setupCity() {
 
 function selectCity(target) {
     city = target.innerText;
+    location.href = "../nearby?pro=" + province + "&city=" + city; //..을 쓰면 슬래시 앞의 경로 반환
 }
