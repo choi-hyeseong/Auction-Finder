@@ -1,15 +1,18 @@
 package com.comet.auctionfinder.component;
 
-import com.comet.auctionfinder.nearby.model.AuctionSimple;
+import com.comet.auctionfinder.model.AuctionSimple;
+import com.comet.auctionfinder.util.AuctionResponse;
+import com.comet.auctionfinder.util.Twin;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.Select;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class AuctionParser {
@@ -31,16 +34,12 @@ public class AuctionParser {
     }
 
     // TODO 경매 모델 생성 -> List로 반환할것.
-    public String parseData(String province, String city) {
+    public Twin<AuctionResponse, List<String>> parseData(String province, String city) throws InterruptedException {
+        List<String> result = new ArrayList<>();
         driver.get(AUCTION_URL);
         String main = driver.getWindowHandle();
         int click = 0;
-        try {
-            Thread.sleep(2000);
-        }
-        catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        Thread.sleep(2000); //팝업 대기
         driver.getWindowHandles().forEach((handle) -> closePopup(handle, main));
         driver.switchTo().window(main);
         //프레임 진짜 ㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋ 이거 보니까 프레임만 변화되는거 같은데?
@@ -52,6 +51,7 @@ public class AuctionParser {
                 click = i;
         }
         proSelect.selectByIndex(click);
+        click = -1;
         Select citySelect = new Select(driver.findElement(By.id("idSiguCode1")));
         if (!city.equals("전체")) {
             for (int i = 0; i < citySelect.getOptions().size(); i++) {
@@ -59,13 +59,22 @@ public class AuctionParser {
                 if (option.equals(city))
                     click = i;
             }
+            if (click == -1) {
+                //옵션에 존재하지 않을경우
+                return Twin.of(AuctionResponse.CITY_NOT_FOUND, result);
+            }
             citySelect.selectByIndex(click);
         }
 
         //driver.findElement(By.id("main_btn")).click(); //검색창
         driver.executeScript("fastSrch()"); //검색 로드
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
-        return driver.findElement(By.className("Ltbl_list")).getText();
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10)); //검색 결과창
+        new Select(driver.findElement(By.id("ipage"))).selectByIndex(3); //40페이지씩 로드
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10)); //로드 대기
+        result.add(driver.findElement(By.className("Ltbl_list")).toString());
+        driver.close();
+
+        return Twin.of(AuctionResponse.FOUND, result);
     }
 
     //경북 -> 경상북도
