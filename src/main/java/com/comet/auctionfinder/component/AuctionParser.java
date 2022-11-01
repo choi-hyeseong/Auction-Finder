@@ -5,14 +5,18 @@ import com.comet.auctionfinder.util.AuctionResponse;
 import com.comet.auctionfinder.util.Twin;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.Select;
 import org.springframework.stereotype.Component;
 
+import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
 
 @Component
 public class AuctionParser {
@@ -34,8 +38,9 @@ public class AuctionParser {
     }
 
     // TODO 경매 모델 생성 -> List로 반환할것.
-    public Twin<AuctionResponse, List<String>> parseData(String province, String city) throws InterruptedException {
-        List<String> result = new ArrayList<>();
+    public Twin<AuctionResponse, List<AuctionSimple>> parseData(String province, String city) throws Exception {
+        List<AuctionSimple> result = new ArrayList<>();
+        //load logic
         driver.get(AUCTION_URL);
         String main = driver.getWindowHandle();
         int click = 0;
@@ -71,9 +76,39 @@ public class AuctionParser {
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10)); //검색 결과창
         new Select(driver.findElement(By.id("ipage"))).selectByIndex(3); //40페이지씩 로드
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10)); //로드 대기
-        result.add(driver.findElement(By.className("Ltbl_list")).toString());
-        driver.close();
 
+
+        //parse logic
+        List<WebElement> elements = driver.findElements(By.xpath("/html/body/div[1]/div[4]/div[3]/div[4]/form[1]/table/tbody")); //해당 페이지 경매품목
+        for (WebElement element : elements) {
+            List<WebElement> trList = element.findElements(By.tagName("tr")); //한 행
+            for (WebElement tr : trList) {
+                List<WebElement> tdList = tr.findElements(By.tagName("td"));
+                tdList.remove(0); //첫번째는 버튼 클릭
+                String[] courtVal = tdList.get(0).getText().split("\n");
+                String court = courtVal[0];
+                String auctionNumber = courtVal[1];
+                String type = tdList.get(1).getText().replace("\n", "");
+                List<Twin<String, String>> area = new ArrayList<>(); //지역 목록
+                List<WebElement> childArea = tdList.get(2).findElements(By.tagName("div")); //지역 목록
+                for (WebElement child : childArea) {
+                    String[] loc = child.getText().split("\n");
+                    area.add(Twin.of(loc[0], loc[1]));
+                }
+                String extra = tdList.get(3).getText();
+                String[] houseValue = tdList.get(4).getText().replace(",", "").split("\n");
+                long checkValue = Long.parseLong(houseValue[0]);
+                long minimumValue = Long.parseLong(houseValue[1]);
+                String[] lastValue = tdList.get(5).getText().trim().split("\n");
+                String part = lastValue[0];
+                Date until = new SimpleDateFormat("yyyy.mm.dd").parse(lastValue[1]);
+                String status = lastValue[2];
+                result.add(AuctionSimple.builder().court(court).auctionNumber(auctionNumber).type(type).area(area).extra(extra)
+                        .checkValue(checkValue).minimumValue(minimumValue).part(part).until(until).status(status)
+                        .build());
+            }
+        }
+        driver.quit();
         return Twin.of(AuctionResponse.FOUND, result);
     }
 
