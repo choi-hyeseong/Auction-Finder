@@ -15,7 +15,7 @@
     <!-- Core theme CSS (includes Bootstrap)-->
     <link href="css/styles.css" rel="stylesheet"/>
 </head>
-<body id="page-top" onload="initMap('${pro}', '${city}')">
+<body id="page-top" style="padding-top: 18px; overflow: hidden" onload="initMap('${pro}', '${city}')">
 <!-- Navigation-->
 <nav class="navbar navbar-expand-lg navbar-dark fixed-top py-3" id="mainNav" style="background-color: #333333">
     <div class="container px-4 px-lg-5">
@@ -44,6 +44,7 @@
 <!-- Core theme JS-->
 <script src="js/map.js"></script>
 <!--Kakao Api-->
-<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=46b4ff5ade4e3ec3bcbf486566df31d7&libraries=services"></script>
+<script type="text/javascript"
+        src="//dapi.kakao.com/v2/maps/sdk.js?appkey=46b4ff5ade4e3ec3bcbf486566df31d7&libraries=services"></script>
 </body>
 </html>

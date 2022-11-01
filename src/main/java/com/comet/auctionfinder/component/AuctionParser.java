@@ -37,7 +37,7 @@ public class AuctionParser {
         driver = new ChromeDriver(options);
     }
 
-    // TODO 경매 모델 생성 -> List로 반환할것.
+    // TODO 여러페이지 파싱할것
     public Twin<AuctionResponse, List<AuctionSimple>> parseData(String province, String city) throws Exception {
         List<AuctionSimple> result = new ArrayList<>();
         //load logic
@@ -52,8 +52,10 @@ public class AuctionParser {
         Select proSelect = new Select(driver.findElement(By.id("idSidoCode1")));
         for (int i = 0; i < proSelect.getOptions().size(); i++) {
             String option = proSelect.getOptions().get(i).getText();
-            if (option.equals(province))
+            if (option.equalsIgnoreCase(province)) {
                 click = i;
+                break;
+            }
         }
         proSelect.selectByIndex(click);
         click = -1;
@@ -108,14 +110,15 @@ public class AuctionParser {
                         .build());
             }
         }
-        driver.close(); //끄지마...
+        //driver.close(); //끄지마... => 창이 하나만 남아있을경우 셀레니움 전체를 종료하는 quit이랑 동일하게 수행됨..
         return Twin.of(AuctionResponse.FOUND, result);
     }
 
     //경북 -> 경상북도
+    //default가 맨위에 있으면 얘 먼저 파싱됨..
     public String matchProvince(String pro) {
+        pro = pro.trim(); //띄어쓰기 하나때문에 ㅎㅎ....
         return switch (pro) {
-            default -> "서울특별시"; //파싱 안될경우
             case "부산" -> "부산광역시";
             case "대구" -> "대구광역시";
             case "인천" -> "인천광역시";
@@ -132,6 +135,7 @@ public class AuctionParser {
             case "경북" -> "경상북도";
             case "경남" -> "경상남도";
             case "제주" -> "제주도";
+            default -> "서울특별시"; //파싱 안될경우
 
         };
     }
@@ -141,6 +145,10 @@ public class AuctionParser {
             driver.switchTo()
                     .window(handle)
                     .close();
+    }
+
+    public void quitSelenium() {
+        driver.quit();
     }
 
 
