@@ -108,7 +108,7 @@ public class AuctionParser {
                         .build());
             }
         }
-        driver.quit();
+        driver.close(); //끄지마...
         return Twin.of(AuctionResponse.FOUND, result);
     }
 
