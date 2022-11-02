@@ -17,9 +17,9 @@ class AuctionParserTest {
     public void PARSE_TEST() throws Exception {
         String pro = parser.matchProvince("서울"); //올바르게 매칭
         String city = "전체";
-        Twin<AuctionResponse, List<AuctionSimple>> result = parser.parseData(pro, city);
-        System.out.println(result.getFirst());
-        result.getSecond().forEach(System.out::println);
+        //Twin<AuctionResponse, List<AuctionSimple>> result = parser.parseData(pro, city);
+        //System.out.println(result.getFirst());
+        //result.getSecond().forEach(System.out::println);
     }
 
     @Test

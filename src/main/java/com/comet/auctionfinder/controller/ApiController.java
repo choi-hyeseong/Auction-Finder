@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 
 @RestController
@@ -24,14 +25,15 @@ public class ApiController {
     private AuctionParser parser;
 
     @GetMapping("/auction")
-    public ResponseEntity<List<AuctionSimple>> auctions(@RequestParam String pro, @RequestParam String city) throws Exception {
+    public CompletableFuture<ResponseEntity<List<AuctionSimple>>> auctions(@RequestParam String pro, @RequestParam String city) throws Exception {
         String province = parser.matchProvince(pro);
-        Twin<AuctionResponse, List<AuctionSimple>> result = parser.parseData(province, city);
-        if (result.getFirst() == AuctionResponse.FOUND) {
-            return new ResponseEntity<>(result.getSecond(), HttpStatus.OK);
-        }
-        else {
-            return new ResponseEntity<>(result.getSecond(), HttpStatus.BAD_REQUEST); //임시로 처리
-        }
+        return parser.parseData(province, city).thenApplyAsync((result) -> {
+            if (result.getFirst() == AuctionResponse.FOUND) {
+                return new ResponseEntity<>(result.getSecond(), HttpStatus.OK);
+            }
+            else {
+                return new ResponseEntity<>(result.getSecond(), HttpStatus.BAD_REQUEST); //임시로 처리
+            }
+        });
     }
 }
