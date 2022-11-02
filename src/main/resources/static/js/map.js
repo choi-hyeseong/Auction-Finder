@@ -5,10 +5,11 @@ function initMap(pro, city) {
     let container = document.getElementById('map'); //지도를 담을 영역의 DOM 레퍼런스
     let options;
     let parseCity = city;
+    let province = pro;
     geocoder = new kakao.maps.services.Geocoder(); //Geoocder를 지원하므로 컴포넌트 제거
     if (parseCity === "전체")
         parseCity = "";
-    geocoder.addressSearch(pro + " " + parseCity, (result, status) => {
+    geocoder.addressSearch(province + " " + parseCity, (result, status) => {
         if (status === "OK") {
             console.log(result);
             options = { //지도를 생성할 때 필요한 기본 옵션
