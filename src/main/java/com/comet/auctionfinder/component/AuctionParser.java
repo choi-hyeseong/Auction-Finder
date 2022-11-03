@@ -4,6 +4,7 @@ import com.comet.auctionfinder.model.AuctionSimple;
 import com.comet.auctionfinder.util.AuctionResponse;
 import com.comet.auctionfinder.util.Twin;
 import io.github.bonigarcia.wdm.WebDriverManager;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -26,37 +27,33 @@ import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 
 @Component
+@AllArgsConstructor
 @Slf4j
 public class AuctionParser {
 
-    private final ChromeOptions options;
+    private AuctionCache cache;
     private static final String AUCTION_URL = "https://www.courtauction.go.kr/";
 
-    public AuctionParser() {
-        WebDriverManager.chromedriver()
-                .setup(); //크롬드라이버 셋업
-        options = new ChromeOptions();
-        options
-                .addArguments("--disable-gpu")
-                .addArguments("--disable-logging")
-                .addArguments("headless")
-                .addArguments("--disable-popup-blocking")
-                .addArguments("--blink-settings=imagesEnabled=false");
-    }
 
-    // TODO 여러페이지 파싱할것
     @Async
     public CompletableFuture<Twin<AuctionResponse, List<AuctionSimple>>> parseData(String province, String city) {
-        ChromeDriver driver = new ChromeDriver(options);
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(2));
+        ChromeDriver driver = null;
         List<AuctionSimple> result = new ArrayList<>();
+        Twin<String, String> input = Twin.of(province, city);
         try {
+            //check cache
+            if (cache.isCacheExist(input))
+                return CompletableFuture.completedFuture(Twin.of(AuctionResponse.FOUND, cache.getCache(input)
+                        .orElseThrow()));
             //load logic
+            driver = new ChromeDriver(getOptions());
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(2));
             driver.get(AUCTION_URL);
             String main = driver.getWindowHandle();
             int click = 0;
             wait.until((dri) -> dri.getWindowHandles().size() > 1); //팝업 대기
-            driver.getWindowHandles().forEach((handle) -> closePopup(driver, handle, main));
+            for (String handle : driver.getWindowHandles())
+                closePopup(driver, handle, main);
             driver.switchTo().window(main);
             //프레임 진짜 ㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋ 이거 보니까 프레임만 변화되는거 같은데?
             driver.switchTo().frame(driver.findElement(By.name("indexFrame")));
@@ -90,7 +87,7 @@ public class AuctionParser {
             new Select(driver.findElement(By.id("ipage"))).selectByIndex(3); //40페이지씩 로드
             while (true) {
                 //무한루프 (페이지가 끝일때까지.)
-               wait.until(ExpectedConditions.presenceOfElementLocated(By.className("page2")));
+                wait.until(ExpectedConditions.presenceOfElementLocated(By.className("page2")));
                 //parse logic
                 List<WebElement> elements = driver.findElements(By.xpath("/html/body/div[1]/div[4]/div[3]/div[4]/form[1]/table/tbody")); //해당 페이지 경매품목
                 for (WebElement element : elements) {
@@ -116,6 +113,7 @@ public class AuctionParser {
                 if (next)
                     break; //while break
             }
+            cache.putCache(input, result); //캐시 저장
             //driver.close(); //끄지마... => 창이 하나만 남아있을경우 셀레니움 전체를 종료하는 quit이랑 동일하게 수행됨..
         }
         catch (Exception e) { //모든 예외가 발생했을경우
@@ -123,7 +121,8 @@ public class AuctionParser {
             CompletableFuture.completedFuture(Twin.of(AuctionResponse.INTERNAL_ERROR, result));
         }
         finally {
-            driver.quit(); //멀티쓰레딩을 위한 객체 사용후 종료
+            if (driver != null)
+                driver.quit(); //멀티쓰레딩을 위한 객체 사용후 종료
         }
 
         return result.size() != 0 ? CompletableFuture.completedFuture(Twin.of(AuctionResponse.FOUND, result)) : CompletableFuture.completedFuture(Twin.of(AuctionResponse.NO_CONTENTS, result));
@@ -133,6 +132,8 @@ public class AuctionParser {
     //default가 맨위에 있으면 얘 먼저 파싱됨.. 아닌가
     public String matchProvince(String pro) {
         pro = pro.trim(); //띄어쓰기 하나때문에 ㅎㅎ....
+        if (pro.contains("시") || pro.contains("도")) //이미 파싱된 정보
+            return pro;
         return switch (pro) {
             case "부산" -> "부산광역시";
             case "대구" -> "대구광역시";
@@ -194,5 +195,13 @@ public class AuctionParser {
         return result;
     }
 
-
+    private ChromeOptions getOptions() {
+        return new ChromeOptions()
+                .addArguments("--disable-gpu")
+                .addArguments("--disable-logging")
+                .addArguments("headless")
+                .addArguments("--disable-popup-blocking")
+                .addArguments("--blink-settings=imagesEnabled=false");
+    }
 }
+

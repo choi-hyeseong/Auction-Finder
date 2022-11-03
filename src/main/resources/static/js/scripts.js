@@ -1,4 +1,5 @@
-let province = ""; //경기도, 서울(특별시) 등등
+$("#start").on("click", () => location.href = "../map");
+/*let province = ""; //경기도, 서울(특별시) 등등
 let city = ""; //강남구 등등
 let city_num = new Array(17); //도시 목록
 setupCity();
@@ -46,46 +47,7 @@ $(".button-province").on("click", (e) => {
 });
 
 
-function getCity(province) {
-    switch (province) {
-        case "서울":
-            return 0;
-        case "부산":
-            return 1;
-        case "대구":
-            return 2;
-        case "인천":
-            return 3;
-        case "광주":
-            return 4;
-        case "대전":
-            return 5;
-        case "울산":
-            return 6;
-        case "세종":
-            return 7;
-        case "경기":
-            return 8;
-        case "강원":
-            return 9;
-        case "충북":
-            return 10;
-        case "충남":
-            return 11;
-        case "전북":
-            return 12;
-        case "전남":
-            return 13;
-        case "경북":
-            return 14;
-        case "경남":
-            return 15;
-        case "제주":
-            return 16;
-        default:
-            return 0;
-    }
-}
+
 
 function setupCity() {
     city_num[0] = ['강남구', '강동구', '강북구', '강서구', '관악구', '광진구', '구로구', '금천구', '노원구', '도봉구', '동대문구', '동작구', '마포구', '서대문구', '서초구', '성동구', '성북구', '송파구', '양천구', '영등포구', '용산구', '은평구', '종로구', '중구', '중랑구'];
@@ -111,3 +73,4 @@ function selectCity(target) {
     city = target.innerText;
     location.href = "../nearby?pro=" + province + "&city=" + city; //..을 쓰면 슬래시 앞의 경로 반환
 }
+ */

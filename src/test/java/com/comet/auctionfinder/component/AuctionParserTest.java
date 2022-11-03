@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class AuctionParserTest {
 
-    private AuctionParser parser = new AuctionParser();
+    private AuctionParser parser = new AuctionParser(new AuctionCache());
 
     @Test
     @DisplayName("특정지역 경매목록 파싱 테스트")

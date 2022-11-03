@@ -18,11 +18,9 @@ public class MainController {
         return "main";
     }
 
-    @GetMapping("/nearby") //localhost:8080/nearby?
-    public String nearby(@RequestParam String pro, @RequestParam String city, Model model) {
-        model.addAttribute("pro", pro);
-        model.addAttribute("city", city);
-        return "nearby";
+    @GetMapping("/map") //localhost:8080/map
+    public String map() {
+        return "map";
     }
 
 }
