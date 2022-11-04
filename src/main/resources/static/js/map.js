@@ -1,6 +1,17 @@
 let map
 let geocoder;
 
+function toggleSide() {
+    let side = $('#sidebar');
+    let search = $("#searchbar");
+    if (side.attr('class') === 'active') //숨겨진경우
+        search.addClass('side-css').removeClass('side-css-off')
+    else
+        search.addClass('side-css-off').removeClass('side-css')
+    side.toggleClass('active');
+
+}
+
 function initMap() {
     let container = document.getElementById('map'); //지도를 담을 영역의 DOM 레퍼런스
     let options;

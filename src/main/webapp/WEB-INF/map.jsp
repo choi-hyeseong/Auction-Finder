@@ -21,10 +21,31 @@
 <!-- Masthead-->
 
 <div id="map" style="width: 100%; height: 100%; position: relative;">
-    <div class="searchbar" style="position: absolute; z-index: 5;"> <!--? Z인덱스가 높으면 위에 뜨나?-->
-        <a href="#" class="menu_icon"><i class="fas fa-bars"></i></a>
+    <div class="searchbar" id="searchbar" style="position: absolute; z-index: 6;"> <!--? Z인덱스가 높으면 위에 뜨나?-->
+        <a href="#" onclick="toggleSide()" class="menu_icon"><i class="fas fa-bars"></i></a>
         <input class="search_input" type="text" name="" placeholder="Search...">
         <a href="#" class="search_icon"><i class="fas fa-search"></i></a>
+    </div>
+    <div class="wrapper" style="position: absolute; z-index: 5">
+        <nav id="sidebar" class="active">
+            <div class="sidebar-header bottom-border">
+                <h3>경매어때?</h3>
+            </div>
+
+            <ul class="list-unstyled components">
+                <li class="active">
+
+                    <a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false"><i class="fas fa-home"></i>ㅤㅤ메인</a>
+                </li>
+                <li>
+                    <a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false"><i class="fas fa-pen-square"></i>ㅤㅤ 자유게시판</a>
+                </li>
+                <li>
+                    <a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false"><i class="fas fa-user-edit"></i>ㅤㅤ마이페이지</a>
+                </li>
+            </ul>
+
+        </nav>
     </div>
 </div>
 

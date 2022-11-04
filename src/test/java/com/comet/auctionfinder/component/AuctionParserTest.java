@@ -3,6 +3,7 @@ package com.comet.auctionfinder.component;
 import com.comet.auctionfinder.model.AuctionSimple;
 import com.comet.auctionfinder.util.AuctionResponse;
 import com.comet.auctionfinder.util.Twin;
+import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,6 +15,10 @@ class AuctionParserTest {
 
     private AuctionParser parser = new AuctionParser(new AuctionCache());
 
+    static {
+        WebDriverManager.chromedriver()
+                .setup(); //크롬드라이버 셋업
+    }
     @Test
     @DisplayName("특정지역 경매목록 파싱 테스트")
     public void PARSE_TEST() throws Exception {
