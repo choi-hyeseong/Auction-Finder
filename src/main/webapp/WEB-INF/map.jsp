@@ -25,8 +25,9 @@
         <a href="#" onclick="toggleSide()" class="menu_icon"><i class="fas fa-bars"></i></a>
         <input class="search_input" type="text" name="" placeholder="Search...">
         <a href="#" class="search_icon"><i class="fas fa-search"></i></a>
+        <div class="suggestions suggestions_pannel"></div> <!--여기다 같이 넣으면 같이 움직이겠지 ㅎㅎㅎㅎ-->
     </div>
-    <div class="wrapper" style="position: absolute; z-index: 5">
+    <div class="wrapper" style="position: absolute;">
         <nav id="sidebar" class="active">
             <div class="sidebar-header bottom-border">
                 <h3>경매어때?</h3>

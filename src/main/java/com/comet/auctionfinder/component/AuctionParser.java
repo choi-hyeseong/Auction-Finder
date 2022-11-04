@@ -3,9 +3,12 @@ package com.comet.auctionfinder.component;
 import com.comet.auctionfinder.model.AuctionSimple;
 import com.comet.auctionfinder.util.AuctionResponse;
 import com.comet.auctionfinder.util.Twin;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -16,14 +19,24 @@ import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.StringReader;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 
 @Component
@@ -33,6 +46,7 @@ public class AuctionParser {
 
     private AuctionCache cache;
     private static final String AUCTION_URL = "https://www.courtauction.go.kr/";
+    private static final String CITY_URL = "https://www.courtauction.go.kr/RetrieveAucSigu.ajax";
 
 
     @Async
@@ -185,7 +199,7 @@ public class AuctionParser {
             long minimumValue = Long.parseLong(houseValue[1]);
             String[] lastValue = tdList.get(5).getText().trim().split("\n");
             String part = lastValue[0];
-            Date until = new SimpleDateFormat("yyyy.mm.dd").parse(lastValue[1]);
+            Date until = new SimpleDateFormat("yyyy.MM.dd").parse(lastValue[1]);
             String status = lastValue[2];
             result.add(AuctionSimple.builder().court(court).auctionNumber(auctionNumber).type(type).area(area)
                     .extra(extra)
@@ -195,6 +209,38 @@ public class AuctionParser {
         return result;
     }
 
+    @Async
+    public CompletableFuture<List<String>> getCities(String province) {
+        //짜증나서 파싱한다..
+        List<String> cities = new ArrayList<>();
+        try {
+            int parse = parseCityToInt(province);
+            if (parse != -1) {
+                //지역 파싱이 된경우.
+                HttpClient client = HttpClient.newHttpClient();
+                String result = client.sendAsync(HttpRequest.newBuilder(new URI(CITY_URL))
+                                .POST(HttpRequest.BodyPublishers.ofString("index=FB&sidoCode=" + parse + "&id2=idSiguCode1&id3=idDongCode1"))
+                                .header("Content-Type", "application/x-www-form-urlencoded")
+                                .build(), HttpResponse.BodyHandlers.ofString())
+                        .thenApply(HttpResponse::body).get(); //파싱은 된듯.
+                Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new InputSource(new StringReader(result)));
+                NodeList list = doc.getElementsByTagName("option");
+                List<String> strList = new ArrayList<>();
+                for (int i = 0; i < list.getLength(); i++)
+                    strList.add(list.item(i).getChildNodes().item(1).toString());
+                strList.remove(strList.size() - 1);
+                strList.remove(0);
+                //첫번째와 끝값은 쓰레기값
+                cities.addAll(strList.stream().map((data) -> data.replace("[#cdata-section: ", "").replace("]", "").replace(" ", "").trim()).toList());
+            }
+
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return CompletableFuture.completedFuture(cities);
+    }
+
     private ChromeOptions getOptions() {
         return new ChromeOptions()
                 .addArguments("--disable-gpu")
@@ -202,6 +248,30 @@ public class AuctionParser {
                 .addArguments("headless")
                 .addArguments("--disable-popup-blocking")
                 .addArguments("--blink-settings=imagesEnabled=false");
+    }
+
+    private int parseCityToInt(String province) {
+        province = province.trim();
+        return switch (province) {
+            case "서울" -> 11;
+            case "부산" -> 26;
+            case "대구" -> 27;
+            case "인천" -> 28;
+            case "광주" -> 29;
+            case "대전" -> 30;
+            case "울산" -> 31;
+            case "세종" -> 36;
+            case "경기" -> 41;
+            case "강원" -> 42;
+            case "충북" -> 43;
+            case "충남" -> 44;
+            case "전북" -> 45;
+            case "전남" -> 46;
+            case "경북" -> 47;
+            case "경남" -> 48;
+            case "제주" -> 50;
+            default -> -1;
+        };
     }
 }
 

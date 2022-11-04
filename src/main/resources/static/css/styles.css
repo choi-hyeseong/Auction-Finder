@@ -2316,6 +2316,7 @@ ul.CTAs a {
     }
     #sidebar.active {
         margin-left: 0;
+        z-index: 5;
     }
     #sidebarCollapse span {
         display: none;
@@ -2373,4 +2374,19 @@ header.masthead .h1, header.masthead h1 {
 .side-css-off {
     margin-left: 1rem;
     transition: margin-left 0.3s;
+}
+
+
+.suggestions {
+    border: none;
+    margin-top: 1rem;
+    background: #ffffff;
+}
+.suggestions > div {
+    padding: 5px;
+    border-top: 1px solid #888;
+    cursor: pointer;
+}
+.suggestions > div:hover {
+    background-color: rgb(207, 204, 204);
 }

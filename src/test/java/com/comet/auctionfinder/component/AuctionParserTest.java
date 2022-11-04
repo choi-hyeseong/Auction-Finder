@@ -8,7 +8,10 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.net.URISyntaxException;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class AuctionParserTest {
@@ -34,5 +37,19 @@ class AuctionParserTest {
         String pro = parser.matchProvince("경북"); //올바르게 매칭
         String city = "전체";
         System.out.println(parser.parseData(pro, city));
+    }
+
+    @Test
+    @DisplayName("지역 파싱 테스트")
+    public void CITY_PARSE_TEST() {
+        try {
+            List<String> list = parser.getCities("경북").get();
+            for (int i = 0; i < list.size(); i++){
+                System.out.println(i + " : " + list.get(i));
+            }
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

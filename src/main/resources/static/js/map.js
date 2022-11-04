@@ -1,13 +1,68 @@
 let map
 let geocoder;
+let search = $(".search_input");
+let recommendFirst = ['서울', '부산', '대구', '인천', '광주', '대전', '울산', '세종', '경기', '강원', '충북', '충남', '전북', '전남', '경북', '경남', '제주'];
+let recommendSecond = [];
+let parsedCity = [];
+
+search.keyup(() => {
+    $(".suggestions").empty()
+    if (search.val().includes(" ")) {
+        let pro = search.val().split(" ");
+        if (!parsedCity.includes(pro[0]))
+            loadCityDynamic(pro[0]);
+        let suggests = recommendSecond.filter((t) => t.includes(search.val()))
+        suggests.forEach((val) => {
+            let div = document.createElement('div');
+            div.innerHTML = val;
+            div.onclick = () => {
+                search.val(val);
+                let res = val.split(" ");
+                $.ajax({
+                    url: "http://127.0.0.1:8080/api/auction?pro=" + res[0] + " &city=" + res[1],
+                    async: false,
+                    type: "get",
+                    contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+                    success: (res) => {
+                        console.log(res)
+                        for (let i = 0; i < res.length; i++) {
+                            for (let k = 0; k < res[i].area.length; k++) {
+                                loadMarker(res[i].area[k].first, res[i].type);
+                            }
+                        }
+                    },
+                    error: (request, status, error) => {
+                        console.log("error");
+                    }
+                })
+            }
+            $(".suggestions").append(div);
+        })
+    }
+    else {
+        let suggests = recommendFirst.filter((t) => t.includes(search.val()))
+        suggests.forEach((val) => {
+            let div = document.createElement('div');
+            div.innerHTML = val;
+            div.onclick = () => search.val(val);
+            $(".suggestions").append(div);
+        })
+    }
+})
+
+$("#map").on("click", () => $(".suggestions").empty());
 
 function toggleSide() {
     let side = $('#sidebar');
     let search = $("#searchbar");
-    if (side.attr('class') === 'active') //숨겨진경우
+    if (side.attr('class') === 'active') { //숨겨진경우
         search.addClass('side-css').removeClass('side-css-off')
-    else
+        side.css("z-index", 5);
+    }
+    else {
         search.addClass('side-css-off').removeClass('side-css')
+        side.css("z-index", 1);
+    }
     side.toggleClass('active');
 
 }
@@ -49,11 +104,10 @@ function loadMap(container, options) {
                 type: "get",
                 contentType: "application/x-www-form-urlencoded; charset=UTF-8",
                 success: (res) => {
-                    let center = map.getCenter();
                     console.log(res)
                     for (let i = 0; i < res.length; i++) {
                         for (let k = 0; k < res[i].area.length; k++) {
-                            loadMarker(center, res[i].area[k].first, res[i].area[k].first + ", " + res[i].checkValue.toLocaleString("ko-kr") + "원ㅤㅤ");
+                            loadMarker(res[i].area[k].first, res[i].type);
                         }
                     }
 
@@ -68,74 +122,56 @@ function loadMap(container, options) {
 
 }
 
-function loadMarker(center, location, txt) {
+function loadMarker(location, type) {
     geocoder.addressSearch(location, (result, status) => {
         if (status === "OK") {
-            let marker = new kakao.maps.Marker({
-                position: new kakao.maps.LatLng(result[0].y, result[0].x),
-            })
-            marker.setMap(map);
-            let iwContent = '<div style="width: 100%; font-size: 12pt; padding: 10px;"><a>' + txt + '</a></div>' // 인포윈도우에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
-            let iwPosition = new kakao.maps.LatLng(result[0].y, result[0].x); //인포윈도우 표시 위치입니다
-            let info = new kakao.maps.InfoWindow({position: iwPosition, content: iwContent});
-            info.open(map, marker);
-            map.setCenter(center);
+            let img;
+            type = type.replace("1", "");
+            switch (type) {
+                case "임야":
+                case "대지":
+                case "전답":
+                    img = "<img src='../assets/img/mountain.png' style='width: 50px; height: 50px'>";
+                    break;
+                case "기타":
+                    img = "<img src='../assets/img/factory.png' style='width: 50px; height: 50px'>";
+                    break
+                default:
+                    img = "<img src='../assets/img/house.png' style='width: 50px; height: 50px'>";
+                    break;
+            }
+            let overContent = '<div style="width: 100%; background: transparent">' + img + '</div>' // 인포윈도우에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
+            let overPosition = new kakao.maps.LatLng(result[0].y, result[0].x); //인포윈도우 표시 위치입니다
+            let customOverlay = new kakao.maps.CustomOverlay({
+                position: overPosition,
+                content: overContent
+            });
+
+// 커스텀 오버레이를 지도에 표시합니다
+            customOverlay.setMap(map);
         }
     })
 
-    function getCity(province) {
-        switch (province) {
-            case "서울":
-                return 11;
-            case "부산":
-                return 26;
-            case "대구":
-                return 27;
-            case "인천":
-                return 28;
-            case "광주":
-                return 29;
-            case "대전":
-                return 30;
-            case "울산":
-                return 31;
-            case "세종":
-                return 36;
-            case "경기":
-                return 41;
-            case "강원":
-                return 42;
-            case "충북":
-                return 43;
-            case "충남":
-                return 44;
-            case "전북":
-                return 45;
-            case "전남":
-                return 46;
-            case "경북":
-                return 47;
-            case "경남":
-                return 48;
-            case "제주":
-                return 50;
-            default:
-                return 0;
-        }
-    }
-
-    function loadCityDynamic() {
-        /*
-       var aJax = new lafj.xSync('/RetrieveAucSigu.ajax');
-        aJax.addQuery("index", 'FB');
-        aJax.addQuery("sidoCode", getCity(val));
-        aJax.addQuery("id2", 'idSiguCode1');
-        aJax.addQuery("id3", 'idDongCode1');
-        aJax.fire();
-         */
-    }
 }
+    function loadCityDynamic(val) {
+        $.ajax({
+            url: "api/city?pro=" + val,
+            async: false,
+            type: "get",
+            crossDomain: true,
+            contentType: "application/json",
+            success: (res) => {
+                parsedCity.push(val);
+                for (let i = 0; i < res.length; i++) {
+                    recommendSecond.push(val + " " + res[i]);
+                }
+            },
+            error: (request, status, error) => {
+                console.log("error");
+            }
+        })
 
+}
 /*
 function initMap(pro, city) {
     let container = document.getElementById('map'); //지도를 담을 영역의 DOM 레퍼런스

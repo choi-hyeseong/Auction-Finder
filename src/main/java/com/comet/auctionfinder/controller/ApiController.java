@@ -25,7 +25,7 @@ public class ApiController {
     private AuctionParser parser;
 
     @GetMapping("/auction")
-    public CompletableFuture<ResponseEntity<List<AuctionSimple>>> auctions(@RequestParam String pro, @RequestParam String city) throws Exception {
+    public CompletableFuture<ResponseEntity<List<AuctionSimple>>> auctions(@RequestParam String pro, @RequestParam String city) {
         String province = parser.matchProvince(pro);
         return parser.parseData(province, city).thenApplyAsync((result) -> {
             if (result.getFirst() == AuctionResponse.FOUND) {
@@ -35,5 +35,10 @@ public class ApiController {
                 return new ResponseEntity<>(result.getSecond(), HttpStatus.BAD_REQUEST); //임시로 처리
             }
         });
+    }
+
+    @GetMapping("/city")
+    public CompletableFuture<ResponseEntity<List<String>>> cities(@RequestParam String pro) {
+        return parser.getCities(pro).thenApplyAsync((result) -> new ResponseEntity<>(result, HttpStatus.OK));
     }
 }
