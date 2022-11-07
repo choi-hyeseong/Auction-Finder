@@ -23,8 +23,9 @@
 <div id="map" style="width: 100%; height: 100%; position: relative;">
     <div class="searchbar" id="searchbar" style="position: absolute; z-index: 6;"> <!--? Z인덱스가 높으면 위에 뜨나?-->
         <a href="#" onclick="toggleSide()" class="menu_icon"><i class="fas fa-bars"></i></a>
-        <input class="search_input" type="text" name="" placeholder="Search...">
+        <input class="search_input" type="text" name="" placeholder="Search..." onfocus="this.placeholder = ''">
         <a href="#" class="search_icon"><i class="fas fa-search"></i></a>
+        <img src="../assets/img/loading.gif" id="loading" style="width: 35px; height: 35px; margin: 3px; float: right;">
         <div class="suggestions suggestions_pannel"></div> <!--여기다 같이 넣으면 같이 움직이겠지 ㅎㅎㅎㅎ-->
     </div>
     <div class="wrapper" style="position: absolute;">

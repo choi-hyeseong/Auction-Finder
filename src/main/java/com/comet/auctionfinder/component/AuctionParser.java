@@ -3,12 +3,8 @@ package com.comet.auctionfinder.component;
 import com.comet.auctionfinder.model.AuctionSimple;
 import com.comet.auctionfinder.util.AuctionResponse;
 import com.comet.auctionfinder.util.Twin;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.bonigarcia.wdm.WebDriverManager;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.hc.client5.http.classic.methods.HttpPost;
-import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -23,11 +19,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.StringReader;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -36,8 +30,6 @@ import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.logging.Level;
 
 @Component
 @AllArgsConstructor
@@ -105,7 +97,7 @@ public class AuctionParser {
                 //parse logic
                 List<WebElement> elements = driver.findElements(By.xpath("/html/body/div[1]/div[4]/div[3]/div[4]/form[1]/table/tbody")); //해당 페이지 경매품목
                 for (WebElement element : elements) {
-                    result.addAll(parseDateFromElement(element));
+                    result.addAll(parseDataFromElement(element));
                 }
 
                 //next page logic
@@ -177,7 +169,7 @@ public class AuctionParser {
                     .close();
     }
 
-    private List<AuctionSimple> parseDateFromElement(WebElement tbody) throws ParseException {
+    private List<AuctionSimple> parseDataFromElement(WebElement tbody) throws ParseException {
         List<AuctionSimple> result = new ArrayList<>();
         List<WebElement> trList = tbody.findElements(By.tagName("tr")); //한 행
         for (WebElement tr : trList) {
@@ -231,7 +223,7 @@ public class AuctionParser {
                 strList.remove(strList.size() - 1);
                 strList.remove(0);
                 //첫번째와 끝값은 쓰레기값
-                cities.addAll(strList.stream().map((data) -> data.replace("[#cdata-section: ", "").replace("]", "").replace(" ", "").trim()).toList());
+                cities.addAll(strList.stream().distinct().map((data) -> data.replace("[#cdata-section: ", "").replace("]", "").replace(" ", "").trim()).toList());
             }
 
         }

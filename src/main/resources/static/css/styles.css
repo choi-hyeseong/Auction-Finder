@@ -2138,10 +2138,10 @@ hr.divider-light {
 .search_input{
     color: white;
     border: 0;
+    caret-color: white;
     outline: 0;
     background: none;
     width: 450px;
-    caret-color:transparent;
     line-height: 40px;
     transition: width 0.4s linear;
     padding: 0 10px;
@@ -2389,4 +2389,30 @@ header.masthead .h1, header.masthead h1 {
 }
 .suggestions > div:hover {
     background-color: rgb(207, 204, 204);
+}
+
+.speech-bubble {
+    position: relative;
+    background: rgba(255, 255, 255, 70%);
+    border-radius: 1em;
+}
+
+.speech-bubble:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border: 22px solid transparent;
+    border-top-color: rgba(255, 255, 255, 70%);
+    border-bottom: 0;
+    border-left: 0;
+    margin-left: -11px;
+    margin-bottom: -22px;
+}
+
+hr.solid {
+    border-top: 1px solid #000000;
+    margin: 0 0 5px;
 }
