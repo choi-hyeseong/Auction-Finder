@@ -1,0 +1,32 @@
+body {
+    min-height: 100vh;
+}
+
+html	{ overflow: hidden; }
+body	{ overflow: auto; }
+
+body::before {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url("../assets/img/bg.jpg");
+    background-size: cover;
+    -webkit-filter: blur(5px);
+    -ms-filter: blur(5px);
+    filter: blur(5px);
+    transform: scale(1.02);
+    z-index: -1;
+    content: "";
+}
+
+.input-form {
+    max-width: 680px;
+    margin-top: 80px;
+    padding: 32px;
+    background: #fff;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+}

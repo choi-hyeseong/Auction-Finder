@@ -15,33 +15,41 @@ public class SpringSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf() //이거 비활성화 해줘야 post 요청됨.. 칫
-            .disable()
-            .headers()
-            .frameOptions()
-            .disable()//h2-console
-            .and()
-            .authorizeRequests(auth -> auth.anyRequest().permitAll())
-            /*auth.mvcMatchers("/login")
-                                           .permitAll()
-                                           .mvcMatchers("/login/**")
-                                           .permitAll()
-                                           .mvcMatchers("/main")
-                                           .permitAll()
-                                           .mvcMatchers("/register")
-                                           .permitAll()
-                                           .antMatchers("/h2-console/**")
-                                           .permitAll()
-                                           .antMatchers("/board")
-                                           .hasAuthority("USER")
-                                           .anyRequest()
-                                           .authenticated()
+                .disable()
+                .headers()
+                .frameOptions()
+                .disable()//h2-console
+                .and()
+                .authorizeRequests(auth ->
 
-             */
-            .formLogin(login -> login.loginPage("/login") //폼 형식 로그인
-                                     .usernameParameter("username") //username : ~
-                                     .passwordParameter("password") //password : ~
-                                     .loginProcessingUrl("/login")
-                                     .permitAll());
+                        auth.mvcMatchers("/login")
+                                .permitAll()
+                                .mvcMatchers("/login/**")
+                                .permitAll()
+                                .mvcMatchers("/").permitAll()
+                                .mvcMatchers("/main")
+                                .permitAll()
+                                .mvcMatchers("/map")
+                                .permitAll()
+                                .mvcMatchers("/register")
+                                .permitAll()
+                                .mvcMatchers("/api/**")
+                                .permitAll()
+                                .mvcMatchers("/assets/**")
+                                .permitAll()
+                                .mvcMatchers("/css/**")
+                                .permitAll()
+                                .mvcMatchers("/js/**")
+                                .permitAll()
+                                .anyRequest()
+                                .authenticated()
+
+                )
+                .formLogin(login -> login.loginPage("/login") //폼 형식 로그인
+                        .usernameParameter("username") //username : ~
+                        .passwordParameter("password") //password : ~
+                        .loginProcessingUrl("/login")
+                        .permitAll());
 
         return http.build();
     }

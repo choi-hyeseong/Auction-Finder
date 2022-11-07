@@ -1,13 +1,11 @@
-package com.comet.auctionfinder.controller;
+package com.comet.auctionfinder.controller.api;
 
 import com.comet.auctionfinder.component.AuctionParser;
 import com.comet.auctionfinder.model.AuctionSimple;
 import com.comet.auctionfinder.util.AuctionResponse;
-import com.comet.auctionfinder.util.Twin;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,7 +18,7 @@ import java.util.concurrent.CompletableFuture;
 @RestController
 @RequestMapping("/api")
 @AllArgsConstructor
-public class ApiController {
+public class AuctionApiController {
 
     private AuctionParser parser;
 
@@ -41,4 +39,6 @@ public class ApiController {
     public CompletableFuture<ResponseEntity<List<String>>> cities(@RequestParam String pro) {
         return parser.getCities(pro).thenApplyAsync((result) -> new ResponseEntity<>(result, HttpStatus.OK));
     }
+
+
 }
