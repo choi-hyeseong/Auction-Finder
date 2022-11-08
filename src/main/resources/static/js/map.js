@@ -176,7 +176,7 @@ function loadMarker(location, type) {
                     img = "<img src='../assets/img/house.png' style='width: 50px; height: 50px'>";
                     break;
             }
-            let overContent = '<div class="speech-bubble" style="width: 130%; padding: 7px; text-align: center"><p style="color: #000000; margin-bottom: 5px">' + type + "</p><hr class='solid'>" + img + '</div>' // 인포윈도우에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
+            let overContent = '<div class="speech-bubble" style="width: 130%; padding: 7px; text-align: center"><p style="color: #ffffff; margin-bottom: 5px">' + type + "</p><hr class='solid'>" + img + '</div>' // 인포윈도우에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
             let overPosition = new kakao.maps.LatLng(result[0].y, result[0].x); //인포윈도우 표시 위치입니다
             let customOverlay = new kakao.maps.CustomOverlay({
                 position: overPosition,

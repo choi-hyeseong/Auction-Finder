@@ -2393,7 +2393,7 @@ header.masthead .h1, header.masthead h1 {
 
 .speech-bubble {
     position: relative;
-    background: rgba(255, 255, 255, 70%);
+    background: rgba(107, 114, 142, 90%);
     border-radius: 1em;
 }
 
@@ -2405,7 +2405,7 @@ header.masthead .h1, header.masthead h1 {
     width: 0;
     height: 0;
     border: 22px solid transparent;
-    border-top-color: rgba(255, 255, 255, 70%);
+    border-top-color: rgba(107, 114, 142, 90%);
     border-bottom: 0;
     border-left: 0;
     margin-left: -11px;
@@ -2413,6 +2413,6 @@ header.masthead .h1, header.masthead h1 {
 }
 
 hr.solid {
-    border-top: 1px solid #000000;
+    border-top: 1px solid #ffffff;
     margin: 0 0 5px;
 }

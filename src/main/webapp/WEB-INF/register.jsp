@@ -29,7 +29,7 @@
                     <div class="col-md-3 mb-3">
                         <label for="name">아이디</label>
                         <input type="text" class="form-control" id="name" placeholder="" value="" required>
-                        <div class="invalid-feedback">
+                        <div class="invalid-feedback" id="idFeedback">
                             아이디를 입력해주세요.
                         </div>
                     </div>
@@ -37,8 +37,8 @@
                 <div class="row">
                     <div class="col-md-3 mb-3">
                         <label for="password">비밀번호</label>
-                        <input type="password" class="form-control" id="password" placeholder="" value="" required>
-                        <div class="invalid-feedback">
+                        <input type="password" class="form-control" id="password" placeholder="" value="" onkeydown="clear(this.id)" required>
+                        <div class="invalid-feedback" id="passFeedback">
                             비밀번호를 입력해주세요.
                         </div>
                     </div>
@@ -47,8 +47,8 @@
                 <div class="row">
                     <div class="col-md-3 mb-3">
                         <label for="nickname">닉네임</label>
-                        <input type="text" class="form-control" id="nickname" placeholder="" value="" required>
-                        <div class="invalid-feedback">
+                        <input type="text" class="form-control" id="nickname" placeholder="" value=""  onkeydown="clear(this.id)" required>
+                        <div class="invalid-feedback" id="nickFeedback">
                             닉네임을 입력해주세요.
                         </div>
                     </div>
@@ -57,9 +57,9 @@
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="email">이메일</label>
-                        <input type="email" class="form-control" id="email" placeholder="example@example.com"
+                        <input type="email" class="form-control" id="email" placeholder="example@example.com" onkeydown="clear(this.id)"
                                required>
-                        <div class="invalid-feedback">
+                        <div class="invalid-feedback" id="emailFeedback">
                             이메일을 입력해주세요.
                         </div>
                     </div>

@@ -1,3 +1,7 @@
+@import url(//fonts.googleapis.com/earlyaccess/nanumgothic.css);
+* {
+    font-family: 'Nanum Gothic', sans-serif
+}
 body {
     min-height: 100vh;
 }
@@ -29,4 +33,9 @@ body::before {
     -webkit-border-radius: 10px;
     -moz-border-radius: 10px;
     border-radius: 10px;
+}
+
+.register-error {
+    border-color: #dc3545 !important;
+    background-image: none !important;
 }

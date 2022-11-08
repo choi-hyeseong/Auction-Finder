@@ -22,23 +22,8 @@ public class AuthApiController {
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse> createRegister(@Valid @RequestBody MemberRequestDto dto) {
-        String message;
-        boolean success;
-        boolean isNickExist = service.isNickNameExist(dto.getNickName());
-        boolean isUserIdExist = service.isUserIDExist(dto.getUserId());
-        if (isNickExist || isUserIdExist) {
-            success = false;
-            if (service.isNickNameExist(dto.getNickName()))
-                message = "이미 존재하는 닉네임입니다.";
-            else
-                message = "이미 존재하는 아이디입니다.";
-        }
-        else {
-            message = "성공!";
-            success = true;
-            service.createUser(dto);
-        }
-        return new ResponseEntity<>(new ApiResponse(message, success), success ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
+        service.createUser(dto);
+        return new ResponseEntity<>(new ApiResponse("success!", true),HttpStatus.OK);
     }
 }
 
