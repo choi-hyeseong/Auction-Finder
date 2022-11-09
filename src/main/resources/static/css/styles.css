@@ -2416,3 +2416,20 @@ hr.solid {
     border-top: 1px solid #ffffff;
     margin: 0 0 5px;
 }
+
+.map-info {
+    width: 400px;
+    height: 500px;
+    z-index: 5;
+    background: rgba(107, 114, 142, 90%);
+    top: 250px;
+    left: 350px;
+    border-radius: 2rem;
+
+}
+
+.info-normal {
+    width: 100%;
+    line-height: 1.2rem;
+    margin: 0.5rem 0;
+}

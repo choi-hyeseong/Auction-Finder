@@ -6,6 +6,8 @@ let recommendSecond = [];
 let parsedCity = [];
 let markers = [];
 let index = -1;
+let startX, startY, startOverlayPoint, customoverlay;
+let parsedData = [];
 
 $("#loading").hide();
 search.keyup((e) => {
@@ -14,12 +16,10 @@ search.keyup((e) => {
         if (input.includes(" ")) {
             let res = input.split(" ");
             areaSearch(res[0], res[1])
-        }
-        else {
+        } else {
             //특정 매물 검색
         }
-    }
-    else if (e.keyCode === 38 || e.keyCode === 40) {
+    } else if (e.keyCode === 38 || e.keyCode === 40) {
         let children = $(".suggestions").children();
         if (children.length > 1) {
             if (index === -1)
@@ -29,8 +29,7 @@ search.keyup((e) => {
                 if (e.keyCode === 38) {
                     if (index > 0)
                         index = index - 1;
-                }
-                else {
+                } else {
                     //다운
                     if (index < children.length)
                         index = index + 1;
@@ -39,8 +38,7 @@ search.keyup((e) => {
             children.get(index).hover()
             search.val(children.get(index).innerText);
         }
-    }
-    else {
+    } else {
         $(".suggestions").empty() //새로운 검색어
         if (input.includes(" ")) {
             let pro = search.val().split(" ");
@@ -93,10 +91,11 @@ function areaSearch(pro, city) {
         contentType: "application/x-www-form-urlencoded; charset=UTF-8",
         success: (res) => {
             $("#loading").hide();
-            console.log(res)
             for (let i = 0; i < res.length; i++) {
+                if (!parsedData.includes(res[i]))
+                    parsedData.push(res[i]);
                 for (let k = 0; k < res[i].area.length; k++) {
-                    loadMarker(res[i].area[k].first, res[i].type);
+                    loadMarker(res[i].area[k].first, res[i].type, res[i].auctionNumber);
                 }
             }
         },
@@ -106,6 +105,7 @@ function areaSearch(pro, city) {
         }
     })
 }
+
 //사이드바 토글
 function toggleSide() {
     let side = $('#sidebar');
@@ -154,10 +154,31 @@ function loadMap(container, options) {
             console.log(result[0].address_name);
         }
     })
-
+    let content = document.createElement('div');
+    content.style.padding = "1rem";
+    content.className = 'overlay map-info';
+    let innerDiv = "";
+    innerDiv += "<p class='info-normal' style='color: #ffffff; font-size: 14pt; font-weight: bold; line-height: '>매물정보                 (최소가/최대가)</p>"
+    innerDiv += "<a class='info-normal' style='color: #ffffff; font-size: 10pt; text-decoration: underline' href='#'>null()</a>"
+    innerDiv += "<p class='info-normal' style='color: #ffffff; font-size: 14pt; font-weight: bold'>지역</p>"
+    innerDiv += "<pre class='info-normal' style='color: #ffffff; font-size: 10pt; white-space: break-spaces'>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ultricies magna at sagittis consequat. \nPhasellus laoreet pretium augue, a rutrum erat porta non. Vestibulum tempus urna vel velit rhoncus finibus. In hac habitasse platea dictumst. Nulla facilisi. Morbi non enim odio. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Proin accumsan sed urna vitae vestibulum. Nulla gravida arcu quis nisl mattis, eget posuere ligula sagittis. Nulla facilisi.</pre>"
+    innerDiv += "<p class='info-normal' style='color: #ffffff; font-size: 14pt; font-weight: bold'>기타</p>"
+    innerDiv += "<pre class='info-normal' style='color: #ffffff; font-size: 8pt; white-space: break-spaces'>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ultricies magna at sagittis consequat. \nPhasellus laoreet pretium augue, a rutrum erat porta non. Vestibulum tempus urna vel velit rhoncus finibus. In hac habitasse platea dictumst. Nulla facilisi. Morbi non enim odio. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Proin accumsan sed urna vitae vestibulum. Nulla gravida arcu quis nisl mattis, eget posuere ligula sagittis. Nulla facilisi.</pre>"
+    innerDiv += "<p class='info-normal' style='color: #ffffff; font-size: 14pt; font-weight: bold'>기간</p>"
+    innerDiv += "<p class='info-normal' style='color: #ffffff; font-size: 10pt'>2022.12.25까지. (유찰 x회, 경매 x계)</p>"
+    content.insertAdjacentHTML('beforeend', innerDiv);
+    customoverlay = new kakao.maps.CustomOverlay({
+        map: map,
+        content: content,
+        position: map.getCenter()
+    });
+    addEventHandle(content, 'mousedown', onMouseDown);
+// mouseup 이벤트가 일어났을때 mousemove 이벤트를 제거하기 위해
+// document에 mouseup 이벤트를 등록합니다
+    addEventHandle(document, 'mouseup', onMouseUp);
 }
 
-function loadMarker(location, type) {
+function loadMarker(location, type, name) {
 
     geocoder.addressSearch(location, (result, status) => {
         if (status === "OK") {
@@ -176,8 +197,8 @@ function loadMarker(location, type) {
                     img = "<img src='../assets/img/house.png' style='width: 50px; height: 50px'>";
                     break;
             }
-            let overContent = '<div class="speech-bubble" style="width: 130%; padding: 7px; text-align: center"><p style="color: #ffffff; margin-bottom: 5px">' + type + "</p><hr class='solid'>" + img + '</div>' // 인포윈도우에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
             let overPosition = new kakao.maps.LatLng(result[0].y, result[0].x); //인포윈도우 표시 위치입니다
+            let overContent = '<div class="speech-bubble" style="width: 130%; padding: 7px; text-align: center" onclick="onMarkerClick(this)"><p style="color: #ffffff; margin-bottom: 5px">' + type + "</p><hr class='solid'>" + img + '<p style="visibility: hidden; width: 1px; height: 1px" id="mark-name">' + name + '</p></div>' // 인포윈도우에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
             let customOverlay = new kakao.maps.CustomOverlay({
                 position: overPosition,
                 content: overContent
@@ -186,10 +207,120 @@ function loadMarker(location, type) {
             markers.push(customOverlay);
             customOverlay.setMap(map);
             map.setCenter(overPosition);
-
+            $(".map-info").hide();
         }
     })
 
+}
+
+
+function onMarkerClick(obj) {
+    let auctionNumber = obj.children[3].innerHTML;
+    let selected = markers.filter((mark) => mark.getContent().includes(auctionNumber))
+    if (selected.length === 0)
+        alert("상세정보 조회에 실패했습니다. 새로고침 후 다시 시도해주세요.")
+    else {
+        $(".map-info").show();
+        let additional = map.getLevel() * map.getLevel() * 0.00025; //확대 축소 비율에따른 위치설정
+        let position = selected.at(0).getPosition();
+        position.La = position.La + additional
+        position.Ma = position.Ma + additional
+        customoverlay.setPosition(position);
+        //replace logic
+        let content = customoverlay.getContent().children;
+        let auctionData = parsedData.filter((val) => val.auctionNumber === auctionNumber).at(0);
+        // TODO href 구성, 하트 공유 버튼까지
+        if (auctionData !== undefined && auctionData !== null) {
+            content[0].innerText = content[0].innerText.replace("(최소가/최대가)", "(" + auctionData.minimumValue.toLocaleString() + " / " + auctionData.checkValue.toLocaleString() + ")");
+            content[1].innerText = auctionData.auctionNumber + " (" + auctionData.court + ", " + auctionData.type + ")";
+            let areas = ""
+            for (let i = 0; i < auctionData.area.length; i++) {
+                areas += auctionData.area[i].first + " [" + auctionData.area[i].second + "]"
+                if (i !== auctionData.area.length - 1) {
+                    areas += "\n";
+                }
+            }
+            content[3].innerText = areas;
+            content[5].innerText = auctionData.extra
+            content[7].innerText = auctionData.until.split("T")[0] + "까지. (" + auctionData.status + ", " + auctionData.part + ")";
+        }
+
+    }
+
+}
+
+
+// 커스텀 오버레이에 mousedown 했을 때 호출되는 핸들러 입니다
+function onMouseDown(e) {
+    // 커스텀 오버레이를 드래그 할 때, 내부 텍스트가 영역 선택되는 현상을 막아줍니다.
+    if (e.preventDefault) {
+        e.preventDefault();
+    } else {
+        e.returnValue = false;
+    }
+
+    var proj = map.getProjection(), // 지도 객체로 부터 화면픽셀좌표, 지도좌표간 변환을 위한 MapProjection 객체를 얻어옵니다
+        overlayPos = customoverlay.getPosition(); // 커스텀 오버레이의 현재 위치를 가져옵니다
+
+    // 커스텀오버레이에서 마우스 관련 이벤트가 발생해도 지도가 움직이지 않도록 합니다
+    kakao.maps.event.preventMap();
+
+    // mousedown된 좌표를 설정합니다
+    startX = e.clientX;
+    startY = e.clientY;
+
+    // mousedown됐을 때의 커스텀 오버레이의 좌표를
+    // 지도 컨테이너내 픽셀 좌표로 변환합니다
+    startOverlayPoint = proj.containerPointFromCoords(overlayPos);
+
+    // document에 mousemove 이벤트를 등록합니다
+    addEventHandle(document, 'mousemove', onMouseMove);
+}
+
+// 커스텀 오버레이에 mousedown 한 상태에서
+// mousemove 하면 호출되는 핸들러 입니다
+function onMouseMove(e) {
+    // 커스텀 오버레이를 드래그 할 때, 내부 텍스트가 영역 선택되는 현상을 막아줍니다.
+    if (e.preventDefault) {
+        e.preventDefault();
+    } else {
+        e.returnValue = false;
+    }
+
+    var proj = map.getProjection(),// 지도 객체로 부터 화면픽셀좌표, 지도좌표간 변환을 위한 MapProjection 객체를 얻어옵니다
+        deltaX = startX - e.clientX, // mousedown한 픽셀좌표에서 mousemove한 좌표를 빼서 실제로 마우스가 이동된 픽셀좌표를 구합니다
+        deltaY = startY - e.clientY,
+        // mousedown됐을 때의 커스텀 오버레이의 좌표에 실제로 마우스가 이동된 픽셀좌표를 반영합니다
+        newPoint = new kakao.maps.Point(startOverlayPoint.x - deltaX, startOverlayPoint.y - deltaY),
+        // 계산된 픽셀 좌표를 지도 컨테이너에 해당하는 지도 좌표로 변경합니다
+        newPos = proj.coordsFromContainerPoint(newPoint);
+
+    // 커스텀 오버레이의 좌표를 설정합니다
+    customoverlay.setPosition(newPos);
+}
+
+// mouseup 했을 때 호출되는 핸들러 입니다
+function onMouseUp(e) {
+    // 등록된 mousemove 이벤트 핸들러를 제거합니다
+    removeEventHandle(document, 'mousemove', onMouseMove);
+}
+
+// target node에 이벤트 핸들러를 등록하는 함수힙니다
+function addEventHandle(target, type, callback) {
+    if (target.addEventListener) {
+        target.addEventListener(type, callback);
+    } else {
+        target.attachEvent('on' + type, callback);
+    }
+}
+
+// target node에 등록된 이벤트 핸들러를 제거하는 함수힙니다
+function removeEventHandle(target, type, callback) {
+    if (target.removeEventListener) {
+        target.removeEventListener(type, callback);
+    } else {
+        target.detachEvent('on' + type, callback);
+    }
 }
 
 function loadCityDynamic(val) {
