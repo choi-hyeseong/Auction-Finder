@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 
-@RestController
+@RestController()
 @RequestMapping("/api")
 @AllArgsConstructor
 public class AuctionApiController {
@@ -54,7 +54,7 @@ public class AuctionApiController {
         }
     }
 
-    @PutMapping("/heart")
+    @PutMapping("/heart") //modelattribute == bindException
     public ResponseEntity<Integer> addHeart(@Valid HeartRequestDto dto, Principal principal) {
         if (principal == null || principal.getName() == null) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

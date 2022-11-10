@@ -20,7 +20,7 @@ public class AuthApiController {
 
     private MemberService service;
 
-    @PostMapping("/register")
+    @PostMapping("/register") //requestbody == methodargumentnotvalid
     public ResponseEntity<ApiResponse> createRegister(@Valid @RequestBody MemberRequestDto dto) {
         service.createUser(dto);
         return new ResponseEntity<>(new ApiResponse("success!", true),HttpStatus.OK);

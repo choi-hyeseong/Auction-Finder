@@ -4,6 +4,7 @@ import com.comet.auctionfinder.exception.ApiException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
@@ -18,8 +19,8 @@ import java.util.List;
 @Slf4j
 public class ApiExceptionHandler {
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiException> argumentNotValidHandler(MethodArgumentNotValidException e) {
+    @ExceptionHandler(BindException.class)
+    public ResponseEntity<ApiException> argumentNotValidHandler(BindException e) {
         BindingResult result = e.getBindingResult();
         StringBuilder builder = new StringBuilder();
         int size = result.getAllErrors().size();
@@ -35,4 +36,5 @@ public class ApiExceptionHandler {
         ApiException exception = new ApiException(builder.toString(), HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>(exception, exception.getStatus());
     }
+
 }
