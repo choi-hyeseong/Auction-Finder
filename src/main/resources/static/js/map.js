@@ -9,6 +9,7 @@ let index = -1;
 let startX, startY, startOverlayPoint, customoverlay;
 let parsedData = [];
 
+
 $("#loading").hide();
 search.keyup((e) => {
     let input = search.val();
@@ -127,6 +128,7 @@ function initMap() {
     navigator.geolocation.getCurrentPosition((position) => {
         options = { //지도를 생성할 때 필요한 기본 옵션
             center: new kakao.maps.LatLng(position.coords.latitude, position.coords.longitude), //지도의 중심좌표.
+            disableDoubleClickZoom: true,
             level: 3 //지도의 레벨(확대, 축소 정도)
         };
         loadMap(container, options)
@@ -134,6 +136,7 @@ function initMap() {
         console.log(error.message)
         options = {
             center: new kakao.maps.LatLng(35.9078, 127.7669), //대한민국 좌표
+            disableDoubleClickZoom: true,
             level: 3
         }
         loadMap(container, options)
@@ -166,6 +169,8 @@ function loadMap(container, options) {
     innerDiv += "<pre class='info-normal' style='color: #ffffff; font-size: 8pt; white-space: break-spaces'>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ultricies magna at sagittis consequat. \nPhasellus laoreet pretium augue, a rutrum erat porta non. Vestibulum tempus urna vel velit rhoncus finibus. In hac habitasse platea dictumst. Nulla facilisi. Morbi non enim odio. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Proin accumsan sed urna vitae vestibulum. Nulla gravida arcu quis nisl mattis, eget posuere ligula sagittis. Nulla facilisi.</pre>"
     innerDiv += "<p class='info-normal' style='color: #ffffff; font-size: 14pt; font-weight: bold'>기간</p>"
     innerDiv += "<p class='info-normal' style='color: #ffffff; font-size: 10pt'>2022.12.25까지. (유찰 x회, 경매 x계)</p>"
+    innerDiv += "<input type='checkbox' style='margin-top: 2px; margin-right: 10px' id='heart'>";
+    innerDiv += "<button style='width: 50px; height: 50px; background: none; border: none; position:relative; bottom: 3px'><i class=\"far fa-share-square fa-2x\"></i></button>";
     content.insertAdjacentHTML('beforeend', innerDiv);
     customoverlay = new kakao.maps.CustomOverlay({
         map: map,
@@ -176,6 +181,7 @@ function loadMap(container, options) {
 // mouseup 이벤트가 일어났을때 mousemove 이벤트를 제거하기 위해
 // document에 mouseup 이벤트를 등록합니다
     addEventHandle(document, 'mouseup', onMouseUp);
+    kakao.maps.event.addListener(map, 'click', () => { $(".map-info").hide();})
 }
 
 function loadMarker(location, type, name) {
@@ -231,7 +237,7 @@ function onMarkerClick(obj) {
         let auctionData = parsedData.filter((val) => val.auctionNumber === auctionNumber).at(0);
         // TODO href 구성, 하트 공유 버튼까지
         if (auctionData !== undefined && auctionData !== null) {
-            content[0].innerText = content[0].innerText.replace("(최소가/최대가)", "(" + auctionData.minimumValue.toLocaleString() + " / " + auctionData.checkValue.toLocaleString() + ")");
+            content[0].innerText = "매물정보 (" + auctionData.minimumValue.toLocaleString() + " / " + auctionData.checkValue.toLocaleString() + ")"
             content[1].innerText = auctionData.auctionNumber + " (" + auctionData.court + ", " + auctionData.type + ")";
             let areas = ""
             for (let i = 0; i < auctionData.area.length; i++) {
@@ -244,6 +250,27 @@ function onMarkerClick(obj) {
             content[5].innerText = auctionData.extra
             content[7].innerText = auctionData.until.split("T")[0] + "까지. (" + auctionData.status + ", " + auctionData.part + ")";
         }
+        $.ajax({
+            url: "../api/heart",
+            async: false,
+            type: "get",
+            contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+            success: (res) => {
+                let isChecked = false;
+                for (let i = 0; i < res.length; i++) {
+                    if (auctionData.court === res[i].court && auctionData.auctionNumber === res[i].auctionValue) {
+                        $("#heart").prop('checked', true)
+                        isChecked = true;
+                        break
+                    }
+                }
+                if (!isChecked)
+                    $("#heart").prop('checked', false)
+            },
+            error: (request, status, error) => {
+
+            }
+        })
 
     }
 

@@ -2419,7 +2419,7 @@ hr.solid {
 
 .map-info {
     width: 400px;
-    height: 500px;
+    height: 650px;
     z-index: 5;
     background: rgba(107, 114, 142, 90%);
     top: 250px;
@@ -2432,4 +2432,42 @@ hr.solid {
     width: 100%;
     line-height: 1.2rem;
     margin: 0.5rem 0;
+}
+
+input[type="checkbox"]{
+    height: 18px;
+    width: 18px;
+    background-color: white;
+    position: relative;
+    outline: none;
+    transform: rotate(45deg);
+    -webkit-appearance: none;
+}
+
+input[type="checkbox"]:before{
+    position: absolute;
+    content: "";
+    background-color: white;
+    height: 60%;
+    width: 100%;
+    top: -59%;
+    border-radius: 75px 75px 0 0;
+}
+
+input[type="checkbox"]:after{
+    position: absolute;
+    content: "";
+    background-color: white;
+    height: 60%;
+    width: 100%;
+    transform: rotate(-90deg);
+    border-radius: 75px 75px 0 0;
+    top: 20%;
+    right: 79%;
+}
+
+input[type="checkbox"]:checked,
+input:checked[type="checkbox"]:before,
+input:checked[type="checkbox"]:after{
+    background-color: #fe0f42;
 }

@@ -134,3 +134,8 @@ h2 {
     font-size: 1.2em;
     letter-spacing: 2px;
 }
+
+.register-error {
+    border-color: #dc3545 !important;
+    background-image: none !important;
+}

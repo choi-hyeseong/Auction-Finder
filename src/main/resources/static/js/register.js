@@ -23,6 +23,8 @@ window.addEventListener('load', () => {
                     data: JSON.stringify(data),
                     success: () => {
                         console.log("created!")
+                        alert("회원가입이 완료되었습니다. 로그인 페이지로 이동합니다.")
+                        location.href = "../login";
                     },
                     error: (res) => {
                         let response = res.responseJSON;

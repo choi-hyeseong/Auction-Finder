@@ -7,13 +7,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @AllArgsConstructor
 @Builder
 @NoArgsConstructor
 @Entity
-public class Member {
+public class Member extends BaseTimeEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,5 +35,24 @@ public class Member {
 
     @Enumerated
     private UserRole role;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "member")
+    private List<MemberHeart> heartList = new ArrayList<>();
+
+    public void addHeart(MemberHeart heart) {
+        //하트는 정적/불변, 해당 메소드 추가전 Heart에서도 동일하게 처리
+        if (heart.getMember() != null)
+            heart.getMember().removeHeart(heart);
+        if (!heartList.contains(heart))
+            heartList.add(heart);
+        heart.setMember(this);
+
+    }
+
+    public void removeHeart(MemberHeart heart) {
+        heartList.remove(heart);
+        heart.setMember(null);
+    }
+
 
 }

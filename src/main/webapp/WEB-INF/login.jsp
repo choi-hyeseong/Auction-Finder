@@ -19,7 +19,8 @@
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico"/>
     <!-- Core theme CSS (includes Bootstrap)-->
     <link href="css/login.css" rel="stylesheet"/>
-</head><body>
+</head>
+<body>
 <div class="wrap">
     <form class="validation-form login" onsubmit="return false" novalidate>
         <h2>로그인</h2>
@@ -43,8 +44,8 @@
                 <input type="checkbox" name="" id=""> 로그인 유지
             </div>
             <div class="forgot_pw">
-                <a href="" style="padding-right: 1rem">회원가입</a>
-                <a href="">비밀번호 찾기</a>
+                <a href="../register" style="padding-right: 1rem">회원가입</a>
+                <a href="../">비밀번호 찾기</a>
             </div>
 
         </div>

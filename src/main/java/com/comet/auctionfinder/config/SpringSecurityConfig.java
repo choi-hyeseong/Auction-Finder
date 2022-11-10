@@ -1,5 +1,7 @@
 package com.comet.auctionfinder.config;
 
+import com.comet.auctionfinder.component.handler.AuthFailHandler;
+import com.comet.auctionfinder.component.handler.AuthSuccessHandler;
 import com.comet.auctionfinder.service.LoginService;
 import com.comet.auctionfinder.service.MemberService;
 import lombok.AllArgsConstructor;
@@ -18,6 +20,9 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SpringSecurityConfig {
 
     private LoginService loginService;
+    private AuthFailHandler failHandler;
+    private AuthSuccessHandler successHandler;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf() //이거 비활성화 해줘야 post 요청됨.. 칫
@@ -33,7 +38,8 @@ public class SpringSecurityConfig {
                                 .permitAll()
                                 .mvcMatchers("/login/**")
                                 .permitAll()
-                                .mvcMatchers("/").permitAll()
+                                .mvcMatchers("/")
+                                .permitAll()
                                 .mvcMatchers("/main")
                                 .permitAll()
                                 .mvcMatchers("/map")
@@ -48,6 +54,8 @@ public class SpringSecurityConfig {
                                 .permitAll()
                                 .mvcMatchers("/js/**")
                                 .permitAll()
+                                .mvcMatchers("/mypage/**")
+                                .hasRole("USER")
                                 .anyRequest()
                                 .authenticated()
 
@@ -56,6 +64,8 @@ public class SpringSecurityConfig {
                         .usernameParameter("username") //username : ~
                         .passwordParameter("password") //password : ~
                         .loginProcessingUrl("/login")
+                        .successHandler(successHandler)
+                        .failureHandler(failHandler)
                         .permitAll())
                 .logout()
                 .logoutUrl("/logout")
