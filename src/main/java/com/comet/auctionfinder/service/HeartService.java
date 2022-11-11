@@ -63,4 +63,35 @@ public class HeartService {
             return new ArrayList<>();
         return member.getHeartList().stream().map(HeartResponseDto::new).toList();
     }
+
+    @Transactional(readOnly = true)
+    public Optional<HeartResponseDto> getMemberHeart(String username, String auctionValue) {
+        Member member = repository.findByUserId(username).orElseThrow();
+        return member.getHeartList().isEmpty() ? Optional.empty() : member.getHeartList().stream()
+                .filter(memberHeart -> memberHeart.getHeart().getAuctionValue().equals(auctionValue))
+                .map(HeartResponseDto::new).findFirst();
+    }
+
+    @Transactional
+    public boolean removeHeart(String username, HeartRequestDto dto) {
+        Member member = repository.findByUserId(username).orElseThrow();
+        String court = dto.getCourt();
+        String auctionValue = dto.getAuctionValue();
+        Optional<Heart> result = heartRepository.findByCourtAndAuctionValue(court, auctionValue);
+        if (result.isEmpty())
+            return false;
+        else {
+            Heart heart = result.get();
+            Optional<MemberHeart> heartResult = memberHeartRepository.findByHeartAndMember(heart, member);
+            if (heartResult.isEmpty())
+                return false;
+            else {
+                MemberHeart memberHeart = heartResult.get();
+                member.removeHeart(memberHeart);
+                heart.removeHeart(memberHeart);
+                memberHeartRepository.delete(memberHeart); //하트를 냅두는 이유 => 재활용 가능
+                return true;
+            }
+        }
+    }
 }

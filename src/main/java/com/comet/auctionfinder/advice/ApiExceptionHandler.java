@@ -1,14 +1,13 @@
 package com.comet.auctionfinder.advice;
 
-import com.comet.auctionfinder.exception.ApiException;
+import com.comet.auctionfinder.dto.ApiException;
+import com.comet.auctionfinder.exception.HeartNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -34,6 +33,12 @@ public class ApiExceptionHandler {
             }
         }
         ApiException exception = new ApiException(builder.toString(), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(exception, exception.getStatus());
+    }
+
+    @ExceptionHandler(HeartNotFoundException.class)
+    public ResponseEntity<ApiException> heartNotFoundHandler(HeartNotFoundException e) {
+        ApiException exception = new ApiException(e.getMessage(), HttpStatus.OK);
         return new ResponseEntity<>(exception, exception.getStatus());
     }
 

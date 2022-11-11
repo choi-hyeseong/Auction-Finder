@@ -3,17 +3,23 @@ package com.comet.auctionfinder.controller.api;
 import com.comet.auctionfinder.component.AuctionParser;
 import com.comet.auctionfinder.dto.HeartRequestDto;
 import com.comet.auctionfinder.dto.HeartResponseDto;
+import com.comet.auctionfinder.exception.HeartNotFoundException;
 import com.comet.auctionfinder.model.AuctionSimple;
 import com.comet.auctionfinder.service.HeartService;
 import com.comet.auctionfinder.util.AuctionResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Nullable;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 
@@ -44,7 +50,7 @@ public class AuctionApiController {
     }
 
     @GetMapping("/heart")
-    public ResponseEntity<List<HeartResponseDto>> getHeart(Principal principal) {
+    public ResponseEntity<List<HeartResponseDto>> getHearts(Principal principal) {
         if (principal == null || principal.getName() == null) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
@@ -54,16 +60,32 @@ public class AuctionApiController {
         }
     }
 
+    //isAuthorized 로 합쳐도 될듯
+    //custom userdetail service이므로 userdetail로 받아야됨
+    @GetMapping("/heart/{auctionValue}")
+    @PreAuthorize("isAuthenticated()")
+    public @Nullable ResponseEntity<HeartResponseDto> getHeart(@PathVariable String auctionValue, @AuthenticationPrincipal UserDetails principal) throws Exception {
+        String username = principal.getUsername();
+        Optional<HeartResponseDto> dto = service.getMemberHeart(username, auctionValue);
+        if (dto.isEmpty())
+            throw new HeartNotFoundException("Heart Not Found");
+        return new ResponseEntity<>(dto.get(), HttpStatus.OK);
+    }
+
     @PutMapping("/heart") //modelattribute == bindException
-    public ResponseEntity<Integer> addHeart(@Valid HeartRequestDto dto, Principal principal) {
-        if (principal == null || principal.getName() == null) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
-        else {
-            String username = principal.getName();
-            service.addHeart(dto, username);
-            return new ResponseEntity<>(HttpStatus.ACCEPTED);
-        }
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Integer> addHeart(@Valid HeartRequestDto dto, @AuthenticationPrincipal UserDetails principal) {
+        String username = principal.getUsername();
+        service.addHeart(dto, username);
+        return new ResponseEntity<>(HttpStatus.ACCEPTED);
+    }
+
+
+    @DeleteMapping("/heart") //modelattribute == bindException
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Boolean> removeHeart(@Valid HeartRequestDto dto, @AuthenticationPrincipal UserDetails principal) {
+        String username = principal.getUsername();
+        return new ResponseEntity<>(service.removeHeart(username, dto), HttpStatus.OK);
     }
 
 

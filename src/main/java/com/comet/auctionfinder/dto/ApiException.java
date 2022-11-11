@@ -1,4 +1,4 @@
-package com.comet.auctionfinder.exception;
+package com.comet.auctionfinder.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

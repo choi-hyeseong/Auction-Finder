@@ -92,19 +92,82 @@ function areaSearch(pro, city) {
         contentType: "application/x-www-form-urlencoded; charset=UTF-8",
         success: (res) => {
             $("#loading").hide();
-            for (let i = 0; i < res.length; i++) {
-                if (!parsedData.includes(res[i]))
-                    parsedData.push(res[i]);
-                for (let k = 0; k < res[i].area.length; k++) {
-                    loadMarker(res[i].area[k].first, res[i].type, res[i].auctionNumber);
+            $.ajax({
+                url: "api/heart",
+                async: false,
+                type: "get",
+                contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+                success: (heartRes) => {
+                    for (let i = 0; i < res.length; i++) {
+                        let focused = false;
+                        for (let j = 0; j < heartRes.length; j++) {
+                            if (heartRes[j].court === res[i].court && heartRes[j].auctionValue === res[i].auctionNumber) {
+                                focused = true;
+                                break;
+                            }
+                        }
+                        if (!parsedData.includes(res[i]))
+                            parsedData.push(res[i]);
+                        for (let k = 0; k < res[i].area.length; k++) {
+                            loadMarker(res[i].area[k].first, res[i].type, res[i].auctionNumber, focused);
+                        }
+                    }
+                },
+                error: (request, status, error) => {
                 }
-            }
+            })
         },
         error: (request, status, error) => {
             $("#loading").hide();
             console.log("error");
         }
     })
+}
+function onHeartClick(obj) {
+    //하트를 클릭했으면 현재 창에 정보가 있는상태
+    let check = obj.checked //눌러서 변화된 상태
+    let info = $("#info-value").text().toString();
+    if (!info.includes("null")) {
+        let firstSplit = info.split("(");
+        let court = firstSplit[1].split(",")[0].trim();
+        let auctionValue = firstSplit[0].trim();
+        if (check) {
+            //하트 누르면
+            $.ajax({
+                url: "/api/heart",
+                async: true,
+                type: "put",
+                dataType: "text", //text로 해야 json인가 리턴값 확인되는듯
+                data: {
+                    court: court,
+                    auctionValue: auctionValue
+                },
+                success: (res) => {
+                    console.log(res);
+                },
+                error: (res) => {
+                    console.log(res);
+                }
+            })
+        } else {
+            $.ajax({
+                url: "/api/heart",
+                async: true,
+                type: "delete",
+                dataType: "text", //text로 해야 json인가 리턴값 확인되는듯
+                data: {
+                    court: court,
+                    auctionValue: auctionValue
+                },
+                success: (res) => {
+                    console.log(res);
+                },
+                error: (res) => {
+                    console.log(res);
+                }
+            })
+        }
+    }
 }
 
 //사이드바 토글
@@ -162,14 +225,14 @@ function loadMap(container, options) {
     content.className = 'overlay map-info';
     let innerDiv = "";
     innerDiv += "<p class='info-normal' style='color: #ffffff; font-size: 14pt; font-weight: bold; line-height: '>매물정보                 (최소가/최대가)</p>"
-    innerDiv += "<a class='info-normal' style='color: #ffffff; font-size: 10pt; text-decoration: underline' href='#'>null()</a>"
+    innerDiv += "<a class='info-normal' style='color: #ffffff; font-size: 10pt; text-decoration: underline' id='info-value' href='#'>null()</a>"
     innerDiv += "<p class='info-normal' style='color: #ffffff; font-size: 14pt; font-weight: bold'>지역</p>"
     innerDiv += "<pre class='info-normal' style='color: #ffffff; font-size: 10pt; white-space: break-spaces'>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ultricies magna at sagittis consequat. \nPhasellus laoreet pretium augue, a rutrum erat porta non. Vestibulum tempus urna vel velit rhoncus finibus. In hac habitasse platea dictumst. Nulla facilisi. Morbi non enim odio. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Proin accumsan sed urna vitae vestibulum. Nulla gravida arcu quis nisl mattis, eget posuere ligula sagittis. Nulla facilisi.</pre>"
     innerDiv += "<p class='info-normal' style='color: #ffffff; font-size: 14pt; font-weight: bold'>기타</p>"
     innerDiv += "<pre class='info-normal' style='color: #ffffff; font-size: 8pt; white-space: break-spaces'>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ultricies magna at sagittis consequat. \nPhasellus laoreet pretium augue, a rutrum erat porta non. Vestibulum tempus urna vel velit rhoncus finibus. In hac habitasse platea dictumst. Nulla facilisi. Morbi non enim odio. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Proin accumsan sed urna vitae vestibulum. Nulla gravida arcu quis nisl mattis, eget posuere ligula sagittis. Nulla facilisi.</pre>"
     innerDiv += "<p class='info-normal' style='color: #ffffff; font-size: 14pt; font-weight: bold'>기간</p>"
     innerDiv += "<p class='info-normal' style='color: #ffffff; font-size: 10pt'>2022.12.25까지. (유찰 x회, 경매 x계)</p>"
-    innerDiv += "<input type='checkbox' style='margin-top: 2px; margin-right: 10px' id='heart'>";
+    innerDiv += "<input type='checkbox' style='margin-top: 2px; margin-right: 10px' id='heart' onchange='onHeartClick(this)'>";
     innerDiv += "<button style='width: 50px; height: 50px; background: none; border: none; position:relative; bottom: 3px'><i class=\"far fa-share-square fa-2x\"></i></button>";
     content.insertAdjacentHTML('beforeend', innerDiv);
     customoverlay = new kakao.maps.CustomOverlay({
@@ -181,14 +244,18 @@ function loadMap(container, options) {
 // mouseup 이벤트가 일어났을때 mousemove 이벤트를 제거하기 위해
 // document에 mouseup 이벤트를 등록합니다
     addEventHandle(document, 'mouseup', onMouseUp);
+    $(".map-info").hide();
     kakao.maps.event.addListener(map, 'click', () => { $(".map-info").hide();})
 }
 
-function loadMarker(location, type, name) {
+function loadMarker(location, type, name, focus) {
 
     geocoder.addressSearch(location, (result, status) => {
         if (status === "OK") {
             let img;
+            let cls = "";
+            if (focus)
+                cls = "focus\"";
             type = type.replace(/[0-9]/gi, "");
             switch (type) {
                 case "임야":
@@ -204,7 +271,7 @@ function loadMarker(location, type, name) {
                     break;
             }
             let overPosition = new kakao.maps.LatLng(result[0].y, result[0].x); //인포윈도우 표시 위치입니다
-            let overContent = '<div class="speech-bubble" style="width: 130%; padding: 7px; text-align: center" onclick="onMarkerClick(this)"><p style="color: #ffffff; margin-bottom: 5px">' + type + "</p><hr class='solid'>" + img + '<p style="visibility: hidden; width: 1px; height: 1px" id="mark-name">' + name + '</p></div>' // 인포윈도우에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
+            let overContent = '<div class="speech-bubble ' + cls + '" style="width: 130%; padding: 7px; text-align: center" onclick="onMarkerClick(this)"><p style="color: #ffffff; margin-bottom: 5px">' + type + "</p><hr class='solid'>" + img + '<p style="visibility: hidden; width: 1px; height: 1px" id="mark-name">' + name + '</p></div>' // 인포윈도우에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
             let customOverlay = new kakao.maps.CustomOverlay({
                 position: overPosition,
                 content: overContent
@@ -251,24 +318,18 @@ function onMarkerClick(obj) {
             content[7].innerText = auctionData.until.split("T")[0] + "까지. (" + auctionData.status + ", " + auctionData.part + ")";
         }
         $.ajax({
-            url: "../api/heart",
+            url: "../api/heart/" + auctionData.auctionNumber,
             async: false,
             type: "get",
             contentType: "application/x-www-form-urlencoded; charset=UTF-8",
             success: (res) => {
-                let isChecked = false;
-                for (let i = 0; i < res.length; i++) {
-                    if (auctionData.court === res[i].court && auctionData.auctionNumber === res[i].auctionValue) {
-                        $("#heart").prop('checked', true)
-                        isChecked = true;
-                        break
-                    }
-                }
-                if (!isChecked)
+                if (res.court !== null && res.court !== undefined)
+                    $("#heart").prop('checked', true)
+                else
                     $("#heart").prop('checked', false)
             },
             error: (request, status, error) => {
-
+                $("#heart").prop('checked', false)
             }
         })
 

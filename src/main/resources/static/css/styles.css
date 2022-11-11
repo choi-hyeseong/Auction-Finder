@@ -2471,3 +2471,7 @@ input:checked[type="checkbox"]:before,
 input:checked[type="checkbox"]:after{
     background-color: #fe0f42;
 }
+
+.focus {
+    border: 3px solid black
+}
