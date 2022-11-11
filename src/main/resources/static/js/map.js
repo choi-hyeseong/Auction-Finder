@@ -154,10 +154,12 @@ function onHeartClick(obj) {
                     console.log(res);
                 },
                 error: (res) => {
-                    console.log(res);
+                    if (res.status === 401)
+                        alert("찜 기능은 로그인 이후 사용가능합니다.")
                 }
             })
-        } else {
+        }
+        else {
             $.ajax({
                 url: "/api/heart",
                 async: true,
@@ -171,7 +173,9 @@ function onHeartClick(obj) {
                     console.log(res);
                 },
                 error: (res) => {
-                    console.log(res);
+                    console.log(res.status)
+                    if (res.status === 401)
+                        alert("찜 기능은 로그인 이후 사용가능합니다.")
                 }
             })
         }

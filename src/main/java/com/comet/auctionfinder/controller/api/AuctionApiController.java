@@ -50,12 +50,12 @@ public class AuctionApiController {
     }
 
     @GetMapping("/heart")
-    public ResponseEntity<List<HeartResponseDto>> getHearts(Principal principal) {
-        if (principal == null || principal.getName() == null) {
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<List<HeartResponseDto>> getHearts(@AuthenticationPrincipal UserDetails principal) {
+        if (checkAjax(principal))
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
         else {
-            String username = principal.getName();
+            String username = principal.getUsername();
             return new ResponseEntity<>(service.getMemberHearts(username), HttpStatus.OK);
         }
     }
@@ -65,6 +65,8 @@ public class AuctionApiController {
     @GetMapping("/heart/{auctionValue}")
     @PreAuthorize("isAuthenticated()")
     public @Nullable ResponseEntity<HeartResponseDto> getHeart(@PathVariable String auctionValue, @AuthenticationPrincipal UserDetails principal) throws Exception {
+        if (checkAjax(principal))
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         String username = principal.getUsername();
         Optional<HeartResponseDto> dto = service.getMemberHeart(username, auctionValue);
         if (dto.isEmpty())
@@ -75,6 +77,8 @@ public class AuctionApiController {
     @PutMapping("/heart") //modelattribute == bindException
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Integer> addHeart(@Valid HeartRequestDto dto, @AuthenticationPrincipal UserDetails principal) {
+        if (checkAjax(principal))
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         String username = principal.getUsername();
         service.addHeart(dto, username);
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
@@ -84,8 +88,14 @@ public class AuctionApiController {
     @DeleteMapping("/heart") //modelattribute == bindException
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Boolean> removeHeart(@Valid HeartRequestDto dto, @AuthenticationPrincipal UserDetails principal) {
+        if (checkAjax(principal))
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         String username = principal.getUsername();
         return new ResponseEntity<>(service.removeHeart(username, dto), HttpStatus.OK);
+    }
+
+    private boolean checkAjax(UserDetails principal) {
+        return principal == null;
     }
 
 
