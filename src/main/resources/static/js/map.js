@@ -114,6 +114,13 @@ function areaSearch(pro, city) {
                     }
                 },
                 error: (request, status, error) => {
+                    for (let i = 0; i < res.length; i++) {
+                        if (!parsedData.includes(res[i]))
+                            parsedData.push(res[i]);
+                        for (let k = 0; k < res[i].area.length; k++) {
+                            loadMarker(res[i].area[k].first, res[i].type, res[i].auctionNumber, false);
+                        }
+                    }
                 }
             })
         },
@@ -123,6 +130,7 @@ function areaSearch(pro, city) {
         }
     })
 }
+
 function onHeartClick(obj) {
     //하트를 클릭했으면 현재 창에 정보가 있는상태
     let check = obj.checked //눌러서 변화된 상태
@@ -245,7 +253,9 @@ function loadMap(container, options) {
 // document에 mouseup 이벤트를 등록합니다
     addEventHandle(document, 'mouseup', onMouseUp);
     $(".map-info").hide();
-    kakao.maps.event.addListener(map, 'click', () => { $(".map-info").hide();})
+    kakao.maps.event.addListener(map, 'click', () => {
+        $(".map-info").hide();
+    })
 }
 
 function loadMarker(location, type, name, focus) {
