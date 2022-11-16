@@ -44,31 +44,43 @@
         <div class="col-md-6 jumbo">
             <div class="h-100 p-5 bg-light border rounded-3">
                 <h5 style="text-align: left; margin-top: 0; margin-bottom: 30px">현재 로그인한 사용자의 정보입니다.</h5>
-                <table class="table">
+                <table class="table" style="width: 45%;">
                     <tbody>
                     <tr style="border: 1px solid #000000;">
-                        <td>
-                            <t5>아이디 : </t5>
-                            <t5 id="id">asdf</t5>
+                        <td style="width: 10%">
+                            <t5>아이디 </t5>
                         </td>
                         <td>
-                            <t5>닉네임 : </t5>
+                            <t5 id="id">asdf</t5>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <t5>닉네임 </t5>
+                        </td>
+                        <td>
                             <t5 id="nick">nick</t5>
                         </td>
                     </tr>
                     <tr style="border: 1px solid #000000;">
                         <td>
-                            <t5>이메일 : </t5>
-                            <t5 id="email">email</t5>
+                            <t5>이메일 </t5>
                         </td>
                         <td>
-                            <t5>등급 : </t5>
+                            <t5 id="email">email</t5>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <t5> 등급 </t5>
+                        </td>
+                        <td>
                             <t5 id="rank">rank</t5>
                         </td>
                     </tr>
                     </tbody>
                 </table>
-                <button class="btn btn-outline-light" type="button">로그아웃</button>
+                <button class="btn btn-outline-light" type="button" onclick="location.href = '../logout'">로그아웃</button>
                 <button class="btn btn-outline-light" type="button">회원수정</button>
                 <button class="btn btn-outline-light" type="button">회원탈퇴</button>
             </div>

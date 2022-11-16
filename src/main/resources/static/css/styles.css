@@ -2503,3 +2503,8 @@ table {
 .btn-outline-light {
     background-color: #DEDEDE;
 }
+
+tr td {
+    border: 1px solid #000000;
+    text-align: center;
+}
