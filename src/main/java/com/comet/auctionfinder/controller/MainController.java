@@ -23,4 +23,8 @@ public class MainController {
         return "map";
     }
 
+    @GetMapping("/mypage")
+    public String mypage() {
+        return "mypage";
+    }
 }

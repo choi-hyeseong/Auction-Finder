@@ -1,6 +1,7 @@
 package com.comet.auctionfinder.service;
 
 import com.comet.auctionfinder.dto.MemberRequestDto;
+import com.comet.auctionfinder.dto.MemberResponseDto;
 import com.comet.auctionfinder.enums.UserRole;
 import com.comet.auctionfinder.model.Member;
 import com.comet.auctionfinder.repository.MemberRepository;
@@ -47,4 +48,8 @@ public class MemberService {
         return repository.existsByNickName(nickName);
     }
 
+    @Transactional(readOnly = true)
+    public MemberResponseDto getMember(String userId) {
+        return new MemberResponseDto(repository.findByUserId(userId).orElseThrow());
+    }
 }

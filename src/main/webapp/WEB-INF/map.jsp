@@ -35,15 +35,15 @@
             </div>
 
             <ul class="list-unstyled components">
-                <li class="active">
+                <li>
 
-                    <a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false"><i class="fas fa-home"></i>ㅤㅤ메인</a>
+                    <a href="../" data-toggle="collapse" aria-expanded="false"><i class="fas fa-home"></i>ㅤㅤ메인</a>
                 </li>
                 <li>
-                    <a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false"><i class="fas fa-pen-square"></i>ㅤㅤ 자유게시판</a>
+                    <a href="#" data-toggle="collapse" aria-expanded="false"><i class="fas fa-pen-square"></i>ㅤㅤ 자유게시판</a>
                 </li>
                 <li>
-                    <a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false"><i class="fas fa-user-edit"></i>ㅤㅤ마이페이지</a>
+                    <a href="../mypage" data-toggle="collapse" aria-expanded="false"><i class="fas fa-user-edit"></i>ㅤㅤ마이페이지</a>
                 </li>
             </ul>
 

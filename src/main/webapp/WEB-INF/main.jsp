@@ -23,9 +23,9 @@
                 aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
         <div class="collapse navbar-collapse" id="navbarResponsive">
             <ul class="navbar-nav ms-auto my-2 my-lg-0">
-                <li class="nav-item"><a class="nav-link">매물검색</a></li>
+                <li class="nav-item"><a class="nav-link" href="/map">매물검색</a></li>
                 <li class="nav-item"><a class="nav-link">자유게시판</a></li>
-                <li class="nav-item"><a class="nav-link">마이페이지</a></li>
+                <li class="nav-item"><a class="nav-link" href="/mypage">마이페이지</a></li>
                 <!--<li class="nav-button" style="padding-top: 1rem; padding-left: 1rem">
                     <button type="button" style="border: 1px solid #555555; background-color: #ffffff; color: white; border-radius: 2em; width: 50px; height: 50px"></button>
                 </li>-->
