@@ -223,7 +223,7 @@ public class AuctionParser {
                 strList.remove(strList.size() - 1);
                 strList.remove(0);
                 //첫번째와 끝값은 쓰레기값
-                cities.addAll(strList.stream().distinct().map((data) -> data.replace("[#cdata-section: ", "").replace("]", "").replace(" ", "").trim()).toList());
+                cities.addAll(strList.stream().distinct().map((data) -> data.replace("[#cdata-section: ", "").replace("]", "").trim()).toList());
             }
 
         }

@@ -16,7 +16,11 @@ search.keyup((e) => {
     if (e.keyCode === 13) {
         if (input.includes(" ")) {
             let res = input.split(" ");
-            areaSearch(res[0], res[1])
+            let city = ""
+            for (let i = 1; i < res.length; i++) {
+                city += res[i] + " "
+            }
+            areaSearch(res[0], city)
         } else {
             //특정 매물 검색
         }
@@ -36,7 +40,6 @@ search.keyup((e) => {
                         index = index + 1;
                 }
             }
-            children.get(index).hover()
             search.val(children.get(index).innerText);
         }
     } else {
@@ -56,7 +59,11 @@ search.keyup((e) => {
                 div.onclick = () => {
                     search.val(val);
                     let res = val.split(" ");
-                    areaSearch(res[0], res[1])
+                    let city = ""
+                    for (let i = 1; i < res.length; i++) {
+                        city += res[i] + " "
+                    }
+                    areaSearch(res[0], city)
                 }
                 $(".suggestions").append(div);
             })
