@@ -52,4 +52,10 @@ class AuctionParserTest {
             throw new RuntimeException(e);
         }
     }
+
+    @Test
+    @DisplayName("디테일 파싱 테스트")
+    public void DETAIL_PARSE_TEST() {
+        parser.parseDetail("김천지원", "2021타경120");
+    }
 }

@@ -4,6 +4,7 @@ import com.comet.auctionfinder.component.AuctionParser;
 import com.comet.auctionfinder.dto.HeartRequestDto;
 import com.comet.auctionfinder.dto.HeartResponseDto;
 import com.comet.auctionfinder.exception.HeartNotFoundException;
+import com.comet.auctionfinder.model.AuctionDetail;
 import com.comet.auctionfinder.model.AuctionSimple;
 import com.comet.auctionfinder.service.HeartService;
 import com.comet.auctionfinder.util.AuctionResponse;
@@ -40,6 +41,18 @@ public class AuctionApiController {
             }
             else {
                 return new ResponseEntity<>(result.getSecond(), HttpStatus.BAD_REQUEST); //임시로 처리
+            }
+        });
+    }
+
+    @GetMapping("/auction/detail")
+    public CompletableFuture<ResponseEntity<AuctionDetail>> details(@RequestParam String court, @RequestParam String value) {
+        return parser.parseDetail(court, value).thenApplyAsync((result) -> {
+            if (result.getFirst() == AuctionResponse.FOUND && result.getSecond().isPresent()) {
+                return new ResponseEntity<>(result.getSecond().get(), HttpStatus.OK);
+            }
+            else {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST); //임시로 처리
             }
         });
     }

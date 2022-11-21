@@ -1,11 +1,15 @@
 package com.comet.auctionfinder.component;
 
+import com.comet.auctionfinder.model.AuctionDetail;
 import com.comet.auctionfinder.model.AuctionSimple;
 import com.comet.auctionfinder.util.AuctionResponse;
+import com.comet.auctionfinder.util.DetailDate;
+import com.comet.auctionfinder.util.DetailList;
 import com.comet.auctionfinder.util.Twin;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -57,9 +61,14 @@ public class AuctionParser {
             driver.get(AUCTION_URL);
             String main = driver.getWindowHandle();
             int click = 0;
-            wait.until((dri) -> dri.getWindowHandles().size() > 1); //팝업 대기
-            for (String handle : driver.getWindowHandles())
-                closePopup(driver, handle, main);
+            try {
+                wait.until((dri) -> dri.getWindowHandles().size() > 1); //팝업 대기
+                for (String handle : driver.getWindowHandles())
+                    closePopup(driver, handle, main);
+            }
+            catch (TimeoutException e) {
+                log.info("not detected popup");
+            }
             driver.switchTo().window(main);
             //프레임 진짜 ㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋ 이거 보니까 프레임만 변화되는거 같은데?
             driver.switchTo().frame(driver.findElement(By.name("indexFrame")));
@@ -134,6 +143,69 @@ public class AuctionParser {
         return result.size() != 0 ? CompletableFuture.completedFuture(Twin.of(AuctionResponse.FOUND, result)) : CompletableFuture.completedFuture(Twin.of(AuctionResponse.NO_CONTENTS, result));
     }
 
+    @Async
+    public CompletableFuture<Twin<AuctionResponse, Optional<AuctionDetail>>> parseDetail(String court, String auctionValue) {
+        ChromeDriver driver = null;
+        Twin<String, String> key = Twin.of(court, auctionValue);
+        if (cache.isCacheExist(key))
+            return CompletableFuture.completedFuture(Twin.of(AuctionResponse.FOUND, cache.getDetailCache(key)));
+        else {
+            try {
+                //load logic
+                driver = new ChromeDriver(getOptions());
+                WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(2));
+                driver.get(AUCTION_URL);
+                String main = driver.getWindowHandle();
+                int click = 0;
+                try {
+                    wait.until((dri) -> dri.getWindowHandles().size() > 1); //팝업 대기
+                    for (String handle : driver.getWindowHandles())
+                        closePopup(driver, handle, main);
+                }
+                catch (TimeoutException e) {
+                    log.info("not detected popup");
+                }
+
+                driver.switchTo().window(main);
+                //프레임 내부 자바스크립트 미동작..?
+                driver.switchTo().frame(driver.findElement(By.name("indexFrame")));
+                driver.executeScript("porActSubmit(\"\",\"InitMulSrch.laf\",\"\",\"PNO102001\")");
+                driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10)); //검색 결과창
+                Select courtSelect = new Select(driver.findElement(By.id("idJiwonNm")));
+                String[] auctionSplit = auctionValue.split("타경");
+                courtSelect.selectByValue(court);
+                Select auctionSelect = new Select(driver.findElement(By.id("idSaYear")));
+                auctionSelect.selectByValue(auctionSplit[0]);
+                WebElement detailValue = driver.findElement(By.id("idSaSer"));
+                detailValue.click();
+                detailValue.sendKeys(auctionSplit[1]);
+                driver.executeScript("srch()"); //검색 로드
+                driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10)); //검색 결과창
+                List<WebElement> elements = driver.findElement(By.className("txtleft")).findElements(By.xpath("*"));
+                for (WebElement element : elements) {
+                    WebElement inner = element.findElement(By.xpath("*"));
+                    String attribute = inner.getAttribute("onclick");
+                    if (attribute != null) {
+                        driver.executeScript(attribute.trim().replace("javascript:", ""));
+                        break;
+                    }
+                }
+                driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+                AuctionDetail result = parseDetailFromElement(driver.findElement(By.id("contents")));
+                cache.putDetailCache(key, result);
+                return CompletableFuture.completedFuture(Twin.of(AuctionResponse.FOUND, Optional.of(result)));
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+                return CompletableFuture.completedFuture(Twin.of(AuctionResponse.INTERNAL_ERROR, Optional.empty()));
+            }
+            finally {
+                if (driver != null)
+                    driver.quit(); //멀티쓰레딩을 위한 객체 사용후 종료
+            }
+        }
+    }
+
     //경북 -> 경상북도
     //default가 맨위에 있으면 얘 먼저 파싱됨.. 아닌가
     public String matchProvince(String pro) {
@@ -167,6 +239,78 @@ public class AuctionParser {
             driver.switchTo()
                     .window(handle)
                     .close();
+    }
+
+    private AuctionDetail parseDetailFromElement(WebElement body) {
+        //content body
+        String auctionValue = body.findElement(By.xpath("//*[@id=\"contents\"]/div[4]/table[1]/tbody/tr[1]/td[1]"))
+                .getText();
+        String auctionNumber = body.findElement(By.xpath("//*[@id=\"contents\"]/div[4]/table[1]/tbody/tr[1]/td[2]"))
+                .getText();
+        String type = body.findElement(By.xpath("//*[@id=\"contents\"]/div[4]/table[1]/tbody/tr[1]/td[3]")).getText();
+        String checkValue = body.findElement(By.xpath("//*[@id=\"contents\"]/div[4]/table[1]/tbody/tr[2]/td[1]"))
+                .getText();
+        String minimumValue = body.findElement(By.xpath("//*[@id=\"contents\"]/div[4]/table[1]/tbody/tr[2]/td[2]"))
+                .getText();
+        String auctionType = body.findElement(By.xpath("//*[@id=\"contents\"]/div[4]/table[1]/tbody/tr[2]/td[3]"))
+                .getText();
+        String endDate = body.findElement(By.xpath("//*[@id=\"contents\"]/div[4]/table[1]/tbody/tr[3]/td")).getText();
+        String extra = body.findElement(By.xpath("//*[@id=\"contents\"]/div[4]/table[1]/tbody/tr[4]/td")).getText();
+        List<String> areas = new ArrayList<>();
+        String part = "";
+        List<WebElement> list = body.findElement(By.xpath("//*[@id=\"contents\"]/div[4]/table[1]/tbody"))
+                .findElements(By.xpath("*"));
+        for (WebElement element : list) {
+            List<WebElement> innerList = element.findElements(By.xpath("*"));
+            if (innerList.get(0).getText().contains("소재지"))
+                areas.add(innerList.get(1).getText());
+            else if (innerList.get(0).getText().contains("담당"))
+                part = innerList.get(1).getText();
+        }
+        String startDate = body.findElement(By.xpath("//*[@id=\"contents\"]/div[4]/table[2]/tbody/tr[1]/td[1]"))
+                .getText();
+        String auctionDate = body.findElement(By.xpath("//*[@id=\"contents\"]/div[4]/table[2]/tbody/tr[1]/td[2]"))
+                .getText();
+        String bidDate = body.findElement(By.xpath("//*[@id=\"contents\"]/div[4]/table[2]/tbody/tr[2]/td[1]"))
+                .getText();
+        String askBid = body.findElement(By.xpath("//*[@id=\"contents\"]/div[4]/table[2]/tbody/tr[2]/td[2]")).getText();
+        String imageExtra = body.findElement(By.xpath("//*[@id=\"contents\"]/div[4]/div[2]/table/tbody/tr/th"))
+                .getText();
+        List<WebElement> elements = body.findElements(By.tagName("a")).stream().filter((element) -> {
+            String inner = element.getAttribute("onclick");
+            return inner != null && inner.contains("showPhotoPopup");
+        }).toList();
+        List<String> images = new ArrayList<>();
+        for (WebElement imageElement : elements) {
+            List<WebElement> child = imageElement.findElements(By.xpath("*"));
+            if (child.size() != 0)
+                images.add(child.get(0).getAttribute("src"));
+        }
+        List<WebElement> dateElement = body.findElement(By.xpath("//*[@id=\"contents\"]/div[5]/table/tbody"))
+                .findElements(By.xpath("*")); //tr
+        List<DetailDate> detailDates = new ArrayList<>();
+        for (WebElement date : dateElement) {
+            List<WebElement> res = date.findElements(By.xpath("*"));
+            DetailDate detailDate = DetailDate.builder().date(res.get(0).getText()).type(res.get(1).getText())
+                    .location(res.get(2).getText()).minimum(res.get(3).getText()).result(res.get(4).getText()).build();
+            detailDates.add(detailDate);
+        }
+        List<WebElement> listElement = body.findElement(By.xpath("//*[@id=\"contents\"]/div[6]/table/tbody"))
+                .findElements(By.xpath("*")); //tr
+        List<DetailList> detailLists = new ArrayList<>();
+        for (WebElement date : dateElement) {
+            List<WebElement> res = date.findElements(By.xpath("*"));
+            DetailList detailList = DetailList.builder().number(res.get(0).getText()).type(res.get(1).getText())
+                    .detail(res.get(2).getText()).build();
+            detailLists.add(detailList);
+        }
+        String summary = body.findElement(By.xpath("//*[@id=\"contents\"]/div[7]/table/tbody/tr/td")).getText();
+        return AuctionDetail.builder().auctionValue(auctionValue).auctionNumber(auctionNumber)
+                .type(type).checkValue(checkValue).minimumValue(minimumValue).auctionType(auctionType).endDate(endDate)
+                .extra(extra).areas(areas).part(part).startDate(startDate).auctionDate(auctionDate).bidDate(bidDate)
+                .askBid(askBid).imageExtra(imageExtra).images(images).dates(detailDates).list(detailLists)
+                .summary(summary).build();
+
     }
 
     private List<AuctionSimple> parseDataFromElement(WebElement tbody) throws ParseException {
@@ -215,7 +359,8 @@ public class AuctionParser {
                                 .header("Content-Type", "application/x-www-form-urlencoded")
                                 .build(), HttpResponse.BodyHandlers.ofString())
                         .thenApply(HttpResponse::body).get(); //파싱은 된듯.
-                Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new InputSource(new StringReader(result)));
+                Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder()
+                        .parse(new InputSource(new StringReader(result)));
                 NodeList list = doc.getElementsByTagName("option");
                 List<String> strList = new ArrayList<>();
                 for (int i = 0; i < list.getLength(); i++)
@@ -223,7 +368,8 @@ public class AuctionParser {
                 strList.remove(strList.size() - 1);
                 strList.remove(0);
                 //첫번째와 끝값은 쓰레기값
-                cities.addAll(strList.stream().distinct().map((data) -> data.replace("[#cdata-section: ", "").replace("]", "").trim()).toList());
+                cities.addAll(strList.stream().distinct()
+                        .map((data) -> data.replace("[#cdata-section: ", "").replace("]", "").trim()).toList());
             }
 
         }
