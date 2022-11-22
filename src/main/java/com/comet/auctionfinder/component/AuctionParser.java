@@ -191,7 +191,7 @@ public class AuctionParser {
                     }
                 }
                 driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
-                AuctionDetail result = parseDetailFromElement(driver.findElement(By.id("contents")));
+                AuctionDetail result = parseDetailFromElement(driver, driver.findElement(By.id("contents")));
                 cache.putDetailCache(key, result);
                 return CompletableFuture.completedFuture(Twin.of(AuctionResponse.FOUND, Optional.of(result)));
             }
@@ -241,7 +241,7 @@ public class AuctionParser {
                     .close();
     }
 
-    private AuctionDetail parseDetailFromElement(WebElement body) {
+    private AuctionDetail parseDetailFromElement(ChromeDriver driver, WebElement body) {
         //content body
         String auctionValue = body.findElement(By.xpath("//*[@id=\"contents\"]/div[4]/table[1]/tbody/tr[1]/td[1]"))
                 .getText();
@@ -276,16 +276,6 @@ public class AuctionParser {
         String askBid = body.findElement(By.xpath("//*[@id=\"contents\"]/div[4]/table[2]/tbody/tr[2]/td[2]")).getText();
         String imageExtra = body.findElement(By.xpath("//*[@id=\"contents\"]/div[4]/div[2]/table/tbody/tr/th"))
                 .getText();
-        List<WebElement> elements = body.findElements(By.tagName("a")).stream().filter((element) -> {
-            String inner = element.getAttribute("onclick");
-            return inner != null && inner.contains("showPhotoPopup");
-        }).toList();
-        List<String> images = new ArrayList<>();
-        for (WebElement imageElement : elements) {
-            List<WebElement> child = imageElement.findElements(By.xpath("*"));
-            if (child.size() != 0)
-                images.add(child.get(0).getAttribute("src"));
-        }
         List<WebElement> dateElement = body.findElement(By.xpath("//*[@id=\"contents\"]/div[5]/table/tbody"))
                 .findElements(By.xpath("*")); //tr
         List<DetailDate> detailDates = new ArrayList<>();
@@ -298,13 +288,63 @@ public class AuctionParser {
         List<WebElement> listElement = body.findElement(By.xpath("//*[@id=\"contents\"]/div[6]/table/tbody"))
                 .findElements(By.xpath("*")); //tr
         List<DetailList> detailLists = new ArrayList<>();
-        for (WebElement date : dateElement) {
+        for (WebElement date : listElement) {
             List<WebElement> res = date.findElements(By.xpath("*"));
             DetailList detailList = DetailList.builder().number(res.get(0).getText()).type(res.get(1).getText())
                     .detail(res.get(2).getText()).build();
             detailLists.add(detailList);
         }
         String summary = body.findElement(By.xpath("//*[@id=\"contents\"]/div[7]/table/tbody/tr/td")).getText();
+        //image Logic
+        List<String> images = new ArrayList<>();
+        Optional<WebElement> optional = body.findElements(By.tagName("a")).stream().filter((element) -> {
+            String inner = element.getAttribute("onclick");
+            return inner != null && inner.contains("showPhotoPopup");
+        }).findFirst();
+        if (optional.isPresent()) {
+            WebElement imageElement = optional.get();
+            driver.executeScript(imageElement.getAttribute("onclick").trim().replace("javascript:", ""));
+            //사진 파싱 팝업.
+            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10)); //기다림
+            String main = driver.getWindowHandle();
+            try {
+                for (String handle : driver.getWindowHandles())
+                    if (!handle.equals(main)) {
+                        driver.switchTo().window(handle); //여기서부터 파싱 가능
+                        while (true) {
+                            //무한루프 (페이지가 끝일때까지.)
+                            //next page logic
+                            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10)); //기다림
+                            WebElement pageDiv = driver.findElement(By.className("page2"));
+                            List<WebElement> pages = pageDiv.findElements(By.xpath("*"));
+                            WebElement srcElement = driver.findElement(By.xpath("//*[@id=\"pop_contents_1\"]/form/div[2]/table/tbody/tr/td/img"));
+                            images.add(srcElement.getAttribute("src"));
+                            boolean next = false;
+                            for (WebElement page : pages) {
+
+                                if (next) {
+                                    next = false;
+                                    page.click();
+                                    break;
+                                }
+                                else if (page.getTagName().contains("span")) {
+                                    //현재페이지인경우.
+                                    next = true;
+                                }
+                            }
+                            if (next)
+                                break; //while break
+                        }
+                        break;
+                    }
+            }
+            catch (TimeoutException e) {
+                log.info("not detected popup");
+            }
+            driver.switchTo().window(main);
+        }
+
+
         return AuctionDetail.builder().auctionValue(auctionValue).auctionNumber(auctionNumber)
                 .type(type).checkValue(checkValue).minimumValue(minimumValue).auctionType(auctionType).endDate(endDate)
                 .extra(extra).areas(areas).part(part).startDate(startDate).auctionDate(auctionDate).bidDate(bidDate)

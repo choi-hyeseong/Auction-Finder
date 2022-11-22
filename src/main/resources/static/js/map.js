@@ -323,10 +323,11 @@ function onMarkerClick(obj) {
         //replace logic
         let content = customoverlay.getContent().children;
         let auctionData = parsedData.filter((val) => val.auctionNumber === auctionNumber).at(0);
-        // TODO href 구성, 하트 공유 버튼까지
+        // 하트 공유 버튼까지
         if (auctionData !== undefined && auctionData !== null) {
             content[0].innerText = "매물정보 (" + auctionData.minimumValue.toLocaleString() + " / " + auctionData.checkValue.toLocaleString() + ")"
             content[1].innerText = auctionData.auctionNumber + " (" + auctionData.court + ", " + auctionData.type + ")";
+            content[1].href = "../detail?court=" + auctionData.court + "&value=" + auctionData.auctionNumber;
             let areas = ""
             for (let i = 0; i < auctionData.area.length; i++) {
                 areas += auctionData.area[i].first + " [" + auctionData.area[i].second + "]"

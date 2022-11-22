@@ -2262,6 +2262,7 @@ a:focus {
 #sidebar ul li a {
     padding: 1rem 1rem 1rem 2rem;
     font-size: 1.1em;
+    color: white;
     display: block;
 }
 
@@ -2504,7 +2505,12 @@ table {
     background-color: #DEDEDE;
 }
 
-tr td {
-    border: 1px solid #000000;
+
+.text {
+    font-size: 14pt;
+    margin-top: 20px;
+}
+
+th {
     text-align: center;
 }

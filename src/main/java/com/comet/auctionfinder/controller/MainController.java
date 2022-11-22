@@ -27,4 +27,9 @@ public class MainController {
     public String mypage() {
         return "mypage";
     }
+
+    @GetMapping("/detail")
+    public String detail() {
+        return "detail";
+    }
 }
