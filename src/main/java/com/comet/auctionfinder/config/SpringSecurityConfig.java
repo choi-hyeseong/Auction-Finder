@@ -55,7 +55,11 @@ public class SpringSecurityConfig {
                                 .mvcMatchers("/js/**")
                                 .permitAll()
                                 .mvcMatchers("/mypage/**")
-                                .hasRole("USER")
+                                .hasAnyRole("USER", "ADMIN")
+                                .mvcMatchers("/detail/**")
+                                .permitAll()
+                                .mvcMatchers("/board")
+                                .permitAll()
                                 .anyRequest()
                                 .authenticated()
 

@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
+import static com.comet.auctionfinder.util.SecurityUtil.checkAjax;
+
 
 @RestController()
 @RequestMapping("/api")
@@ -107,9 +109,7 @@ public class AuctionApiController {
         return new ResponseEntity<>(service.removeHeart(username, dto), HttpStatus.OK);
     }
 
-    private boolean checkAjax(UserDetails principal) {
-        return principal == null;
-    }
+
 
 
 }

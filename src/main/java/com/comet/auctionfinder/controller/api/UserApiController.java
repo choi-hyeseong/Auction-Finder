@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
+import static com.comet.auctionfinder.util.SecurityUtil.checkAjax;
+
 @RequestMapping("/api/user")
 @RestController()
 @AllArgsConstructor
@@ -30,7 +32,7 @@ public class UserApiController {
     @PreAuthorize("isAuthenticated()")
     @GetMapping("")
     public ResponseEntity<MemberResponseDto> getUser(@AuthenticationPrincipal UserDetails auth) {
-        if (auth != null) {
+        if (!checkAjax(auth)) {
             MemberResponseDto dto = service.getMember(auth.getUsername());
             return new ResponseEntity<>(dto, HttpStatus.OK);
         }

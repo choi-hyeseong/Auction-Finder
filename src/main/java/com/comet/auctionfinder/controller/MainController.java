@@ -32,4 +32,24 @@ public class MainController {
     public String detail() {
         return "detail";
     }
+
+    @GetMapping("/board")
+    public String board() {
+        return "board";
+    }
+
+    @GetMapping("/board/write")
+    public String write() {
+        return "write";
+    }
+
+    @GetMapping("/board/detail")
+    public String boardDetail() {
+        return "boardDetail";
+    }
+
+    @GetMapping("/board/edit")
+    public String boardEdit() {
+        return "edit";
+    }
 }
