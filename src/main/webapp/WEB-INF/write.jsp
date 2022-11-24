@@ -37,13 +37,15 @@
 <header class="masthead" style="height: 100%; margin-top: 150px;">
     <div class="container px-4 px-lg-5 h-100">
         <h2 style="margin-bottom: 100px">게시글 작성</h2>
-        <form action="../api/board/write" method="post" id="form">
+        <form action="../api/board/write" method="post" id="form" enctype="multipart/form-data">
             <label for="title" style="margin: 0px 15px 15px 0;font-weight: 700; font-size: 15pt">제목</label>
             <input type="text" class="form-control" id="title" name="title" placeholder="제목을 입력해주세요">
             <label for="content" style="margin: 15px 15px 15px 0; font-weight: 700; font-size: 15pt">내용</label>
             <textarea type="text" class="form-control" id="content" name="content" rows=5 style="height: 300px" placeholder="내용을 입력해주세요"></textarea>
-            <button type="button" class="btn" id="submit" style="float: right; margin-top: 15px; background: #adb3bd; color: #ffffff">작성</button>
-
+            <label style="margin: 15px 15px 15px 0; font-weight: 700; font-size: 15pt">이미지 첨부</label>
+            <p></p>
+            <input type="file" id="file" multiple style="margin-left: 35px;" accept="image/*">
+            <button type="button" class="btn" id="submit" style="float: right; margin-top: 50px; background: #adb3bd; color: #ffffff">작성</button>
         </form>
     </div>
 </header>

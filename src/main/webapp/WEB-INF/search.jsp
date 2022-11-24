@@ -68,13 +68,13 @@
         <a class="btn" style="background: #adb3bd; width: 100px; color: #ffffff; float:right;"
            href="/board/write">글쓰기</a>
             <div class="input-group mb-3" style="position: relative; width: 60%; left: 20%">
-                <select class="selectpicker" type="submit" id="select">
+                <select class="selectpicker" id="select" type="submit" id="select">
                     <option>제목</option>
                     <option>작성자</option>
                     <option>내용</option>
                 </select>
                 <input type="text" class="form-control" id="search-value" aria-describedby="button-addon2" placeholder="검색어를 입력해주세요.">
-                <button class="btn btn-outline-secondary" type="submit" id="search">검색</button>
+                <button class="btn btn-outline-secondary" id="search" type="submit" id="button-addon2">검색</button>
             </div>
         <div class="text-center">
             <ul class="pagination" style="display: -webkit-inline-flex " id="page">
@@ -89,6 +89,6 @@
 <!-- Bootstrap core JS-->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 <!-- Core theme JS-->
-<script src="../js/board.js"></script>
+<script src="../js/search.js"></script>
 </body>
 </html>

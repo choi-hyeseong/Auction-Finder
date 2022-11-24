@@ -11,6 +11,8 @@
     <!-- Favicon-->
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico"/>
     <!-- Core theme CSS (includes Bootstrap)-->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css"
+          integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 </head>
 <body id="page-top" style="height: 1500px" onload="onLoad()">
@@ -57,12 +59,48 @@
             </tr>
             </tbody>
         </table>
+        <h5 style="margin-top: 30px; font-weight: 700">이미지</h5>
+        <li class="list-group-item" style="height: 200px" >
+            <div id="images" style="width: 100%; height: 100%"></div>
+        </li>
         <h5 style="margin-top: 30px; font-weight: 700">내용</h5>
         <pre id="content" style="font-size: 12pt; margin-top: 20px">테스트</pre>
         <a class="btn" style="background: #18ffd5; width: 100px; color: #ffffff; float:right;" href="/board" >목록</a>
         <a class="btn" id="edit" style="margin-left: 15pt; margin-right: 15pt; background: #adb3bd; width: 100px; color: #ffffff; float:right;">글수정</a>
         <a class="btn" id="delete" style="background: #FF1D18; width: 100px; color: #ffffff; float:right;" >글삭제</a>
+        <div class="card mb-2" style="margin-top: 75px; width: 100%">
+        <div class="card-header bg-light">
+            <i class="far fa-comment"> 댓글</i>
+        </div>
+        <div class="card-body" >
+            <ul class="list-group list-group-flush" id="comment">
 
+                <li class="list-group-item">
+                    <i class="fas fa-comment"> 작성자</i>
+                    <button style="float: right; background: transparent; border: 1px solid gray; height: 30px; width: 30px">X</button>
+                    <p>내용</p>
+                </li>
+                <li class="list-group-item">
+                    <i class="fas fa-comment"> 작성자</i>
+                    <p>내용</p>
+                </li>
+                <li class="list-group-item">
+                    <i class="fas fa-comment"> 작성자</i>
+                    <p>내용</p>
+                </li>
+
+            </ul>
+            <li class="list-group-item" style="border: none">
+                <textarea class="form-control" rows="3" id="commentData"></textarea>
+                <button type="button" class="btn btn-dark mt-3" id="submit">댓글 작성</button>
+            </li>
+        </div>
+    </div>
+
+    </div>
+    <div class="modal" style="margin-left: 20%">
+        <div class="modalBox">
+        </div>
     </div>
 </header>
 <!-- Bootstrap core JS-->

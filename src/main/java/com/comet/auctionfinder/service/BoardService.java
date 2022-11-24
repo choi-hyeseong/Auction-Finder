@@ -3,17 +3,23 @@ package com.comet.auctionfinder.service;
 import com.comet.auctionfinder.dto.BoardDetailDto;
 import com.comet.auctionfinder.dto.BoardListDto;
 import com.comet.auctionfinder.dto.BoardRequestDto;
+import com.comet.auctionfinder.dto.ReplyRequestDto;
 import com.comet.auctionfinder.enums.UserRole;
-import com.comet.auctionfinder.model.Board;
-import com.comet.auctionfinder.model.Member;
+import com.comet.auctionfinder.model.*;
 import com.comet.auctionfinder.repository.BoardRepository;
+import com.comet.auctionfinder.repository.FileRepository;
 import com.comet.auctionfinder.repository.MemberRepository;
+import com.comet.auctionfinder.repository.ReplyRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -22,17 +28,33 @@ public class BoardService {
     private BoardRepository repository;
     private MemberRepository memberRepository;
 
+    private ReplyRepository replyRepository;
+
+    private FileRepository fileRepository;
+
     @Transactional
-    public long writeBoard(BoardRequestDto dto, String userId) {
+    public long writeBoard(BoardRequestDto dto, List<FileRequestDto> files, String userId) {
         Member member = memberRepository.findByUserId(userId).orElseThrow();
         dto.setMember(member);
-        return repository.save(dto.toEntity()).getId();
+        Board board = dto.toEntity();
+        files.forEach((file) -> board.addFile(file.toEntity()));
+        return repository.save(board).getId();
     }
 
     @Transactional(readOnly = true)
     public Page<BoardListDto> getBoardList(int page) {
-        Pageable pageable = PageRequest.of(page, 10); //10개씩 보이기
+        Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending()); //10개씩 보이기
         return repository.findAll(pageable).map(BoardListDto::new);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<BoardListDto> getSearchList(String type, String content, int page) {
+        Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending()); //10개씩 보이기
+        return switch (type) {
+            case "제목" -> repository.findByTitleContains(pageable, content).map(BoardListDto::new);
+            case "작성자" -> repository.findByAuthor_NickNameContains(pageable, content).map(BoardListDto::new);
+            default -> repository.findByContentContains(pageable, content).map(BoardListDto::new);
+        };
     }
 
     @Transactional
@@ -56,11 +78,44 @@ public class BoardService {
     }
 
     @Transactional
-    public void editBoard(long id, BoardRequestDto dto, String userId) {
+    public void editBoard(long id, BoardRequestDto dto, String userId, List<FileRequestDto> fileRequestDto) {
         Board board = repository.findById(id).orElseThrow();
         Member member = memberRepository.findByUserId(userId).orElseThrow();
         if (board.getAuthor().getUserId().equals(userId) || member.getRole() == UserRole.ADMIN)
-            board.update(dto.getTitle(), dto.getContent());
+            board.update(dto.getTitle(), dto.getContent(), fileRequestDto);
+    }
+
+    @Transactional
+    public long writeReply(ReplyRequestDto dto, String userId) {
+        Member member = memberRepository.findByUserId(userId).orElseThrow();
+        Board board = repository.findById(dto.getId()).orElseThrow();
+        dto.setMember(member);
+        dto.setBoard(board);
+        Reply reply = dto.toEntity();
+        board.addReply(reply);
+        return repository.save(board).getId(); //안해도 저장될듯 (transactional 에 의해 관리되므로)
+    }
+
+    @Transactional
+    public void removeReply(long id, String userId) {
+        Reply reply = replyRepository.findById(id).orElseThrow();
+        Board board = reply.getBoard();
+        Member member = reply.getMember();
+        if (member != null && (board.getAuthor().getUserId().equals(userId) || member.getRole() == UserRole.ADMIN)) {
+            board.removeReply(reply);
+            replyRepository.delete(reply);
+        }
+    }
+
+    @Transactional
+    public void removeImage(long id, String userId) {
+        FileEntity entity = fileRepository.findById(id).orElseThrow();
+        Board board = entity.getBoard();
+        Member member = board.getAuthor();
+        if (member != null && (board.getAuthor().getUserId().equals(userId) || member.getRole() == UserRole.ADMIN)) {
+            board.removeFile(entity);
+            fileRepository.delete(entity);
+        }
     }
 
 }

@@ -42,6 +42,13 @@
             <input type="text" class="form-control" id="title" name="title" placeholder="제목을 입력해주세요">
             <label for="content" style="margin: 15px 15px 15px 0; font-weight: 700; font-size: 15pt">내용</label>
             <textarea type="text" class="form-control" id="content" name="content" rows=5 style="height: 300px" placeholder="내용을 입력해주세요"></textarea>
+            <h5 style="margin-top: 30px; font-weight: 700">이미지 (클릭시 삭제가 가능합니다.)</h5>
+            <li class="list-group-item" style="height: 200px" >
+                <div id="images" style="width: 100%; height: 100%"></div>
+            </li>
+            <label style="margin: 15px 15px 15px 0; font-weight: 700; font-size: 15pt">이미지 첨부</label>
+            <p></p>
+            <input type="file" id="file" multiple style="margin-left: 35px;" accept="image/*">
             <button type="button" class="btn" id="submit" style="float: right; margin-top: 15px; background: #adb3bd; color: #ffffff">수정</button>
 
         </form>

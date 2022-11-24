@@ -38,6 +38,12 @@ public class MainController {
         return "board";
     }
 
+    @GetMapping("/board/search")
+    public String search() {
+        return "search";
+    }
+
+
     @GetMapping("/board/write")
     public String write() {
         return "write";
