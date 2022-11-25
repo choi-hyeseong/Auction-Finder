@@ -34,7 +34,7 @@
                 <a href="../" data-toggle="collapse" aria-expanded="false"><i class="fas fa-home"></i>ㅤㅤ메인</a>
             </li>
             <li>
-                <a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false"><i class="fas fa-pen-square"></i>ㅤㅤ
+                <a href="../board" data-toggle="collapse" aria-expanded="false"><i class="fas fa-pen-square"></i>ㅤㅤ
                     자유게시판</a>
             </li>
             <li>

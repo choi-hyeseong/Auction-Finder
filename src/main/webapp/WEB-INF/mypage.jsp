@@ -30,7 +30,7 @@
                 <a href="../" data-toggle="collapse" aria-expanded="false"><i class="fas fa-home"></i>ㅤㅤ메인</a>
             </li>
             <li>
-                <a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false"><i class="fas fa-pen-square"></i>ㅤㅤ
+                <a href="../board" data-toggle="collapse" aria-expanded="false"><i class="fas fa-pen-square"></i>ㅤㅤ
                     자유게시판</a>
             </li>
             <li>
@@ -54,7 +54,7 @@
                             <t5 id="id">asdf</t5>
                         </td>
                     </tr>
-                    <tr>
+                    <tr style="border: 1px solid #000000;">
                         <td>
                             <t5>닉네임 </t5>
                         </td>
@@ -70,7 +70,7 @@
                             <t5 id="email">email</t5>
                         </td>
                     </tr>
-                    <tr>
+                    <tr style="border: 1px solid #000000;">
                         <td>
                             <t5> 등급 </t5>
                         </td>
@@ -81,18 +81,13 @@
                     </tbody>
                 </table>
                 <button class="btn btn-outline-light" type="button" onclick="location.href = '../logout'">로그아웃</button>
-                <button class="btn btn-outline-light" type="button">회원수정</button>
-                <button class="btn btn-outline-light" type="button">회원탈퇴</button>
+                <button class="btn btn-outline-light" type="button" onclick="location.href = '../mypage/edit'">회원수정</button>
+                <button class="btn btn-outline-light" type="button" onclick="deleteUser()">회원탈퇴</button>
             </div>
         </div>
         <h5 style="text-align: left">작성한 게시글</h5>
-        <div class="col-md-6 jumbo" style="margin-top: 20px">
-            <div class="h-100 p-5 bg-light border rounded-3">
-                <h2>Add borders</h2>
-                <p>Or, keep it light and add a border for some added definition to the boundaries of your content. Be
-                    sure to look under the hood at the source HTML here as we've adjusted the alignment and sizing of
-                    both column's content for equal-height.</p>
-                <button class="btn btn-outline-secondary" type="button">Example button</button>
+        <div class="col-md-6 jumbo" style="margin-top: 20px; overflow: auto">
+            <div class="p-5 bg-light rounded-3" style="height: 300px;" id="board">
             </div>
         </div>
         <h5 style="text-align: left">좋아요한 매물</h5>

@@ -61,6 +61,11 @@ public class BoardApiController {
         return new ResponseEntity<>(service.getBoardList(page), HttpStatus.OK);
     }
 
+    @GetMapping("/all")
+    public ResponseEntity<List<BoardListDto>> getAllBoardList(String userId) {
+        return new ResponseEntity<>(service.getAllBoardList(userId), HttpStatus.OK);
+    }
+
     @GetMapping("/search")
     public ResponseEntity<Page<BoardListDto>> getBoardSearchList(@RequestParam(value = "page", defaultValue = "0") int page, @RequestParam String type, @RequestParam String content) {
         return new ResponseEntity<>(service.getSearchList(type, content, page), HttpStatus.OK);

@@ -1,5 +1,6 @@
 package com.comet.auctionfinder.model;
 
+import com.comet.auctionfinder.dto.MemberUpdateDto;
 import com.comet.auctionfinder.enums.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -53,6 +54,12 @@ public class Member extends BaseTimeEntity{
         heartList.remove(heart);
         heart.setMember(null);
     }
+
+    public void update(MemberUpdateDto dto) {
+        this.email = dto.getEmail();
+        this.nickName = dto.getNickName();
+    }
+
 
 
 }

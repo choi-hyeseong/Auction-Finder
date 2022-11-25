@@ -40,7 +40,7 @@
                     <a href="../" data-toggle="collapse" aria-expanded="false"><i class="fas fa-home"></i>ㅤㅤ메인</a>
                 </li>
                 <li>
-                    <a href="#" data-toggle="collapse" aria-expanded="false"><i class="fas fa-pen-square"></i>ㅤㅤ 자유게시판</a>
+                    <a href="../board" data-toggle="collapse" aria-expanded="false"><i class="fas fa-pen-square"></i>ㅤㅤ 자유게시판</a>
                 </li>
                 <li>
                     <a href="../mypage" data-toggle="collapse" aria-expanded="false"><i class="fas fa-user-edit"></i>ㅤㅤ마이페이지</a>

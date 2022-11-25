@@ -28,6 +28,11 @@ public class MainController {
         return "mypage";
     }
 
+    @GetMapping("/mypage/edit")
+    public String memberEdit() {
+        return "memberEdit";
+    }
+
     @GetMapping("/detail")
     public String detail() {
         return "detail";

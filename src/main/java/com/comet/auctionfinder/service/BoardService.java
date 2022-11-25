@@ -47,6 +47,12 @@ public class BoardService {
         return repository.findAll(pageable).map(BoardListDto::new);
     }
 
+    @Transactional
+    public List<BoardListDto> getAllBoardList(String userId) {
+        Member member = memberRepository.findByUserId(userId).orElseThrow();
+        return repository.findAllByAuthor_Id(member.getId()).stream().map(BoardListDto::new).toList();
+    }
+
     @Transactional(readOnly = true)
     public Page<BoardListDto> getSearchList(String type, String content, int page) {
         Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending()); //10개씩 보이기

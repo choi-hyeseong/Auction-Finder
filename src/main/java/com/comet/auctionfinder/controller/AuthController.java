@@ -10,6 +10,7 @@ public class AuthController {
 
     @GetMapping("/login")
     public String login(@RequestAttribute(required = false) String error, Model model) {
+        //이거 안쓰는거 같은데
         if (error != null)
             model.addAttribute("error", error);
         return "login";
@@ -19,4 +20,6 @@ public class AuthController {
     public String register() {
         return "register";
     }
+
+
 }

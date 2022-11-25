@@ -49,20 +49,6 @@
             </tr>
             </thead>
             <tbody id="body">
-            <tr>
-                <td>1</td>
-                <td>테스트</td>
-                <td>테스트</td>
-                <td>2020.02.02</td>
-                <td>-1</td>
-            </tr>
-            <tr>
-                <td>2</td>
-                <td>테스트</td>
-                <td>테스트</td>
-                <td>2021.02.02</td>
-                <td>-2</td>
-            </tr>
             </tbody>
         </table>
         <a class="btn" style="background: #adb3bd; width: 100px; color: #ffffff; float:right;"

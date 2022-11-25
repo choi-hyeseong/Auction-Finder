@@ -18,7 +18,7 @@ public class Reply extends BaseTimeEntity {
 
     private String content;
 
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name = "member_id")
     private Member member;
 
