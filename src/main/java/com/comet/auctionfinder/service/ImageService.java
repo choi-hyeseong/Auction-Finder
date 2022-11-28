@@ -1,6 +1,6 @@
 package com.comet.auctionfinder.service;
 
-import com.comet.auctionfinder.model.FileResponseDto;
+import com.comet.auctionfinder.dto.FileResponseDto;
 import com.comet.auctionfinder.repository.FileRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;

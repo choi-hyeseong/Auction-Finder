@@ -1,7 +1,7 @@
 package com.comet.auctionfinder.component;
 
-import com.comet.auctionfinder.model.FileRequestDto;
-import com.comet.auctionfinder.model.FileResponseDto;
+import com.comet.auctionfinder.dto.FileRequestDto;
+import com.comet.auctionfinder.dto.FileResponseDto;
 import lombok.AllArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;

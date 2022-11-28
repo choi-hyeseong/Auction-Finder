@@ -1,7 +1,6 @@
 package com.comet.auctionfinder.dto;
 
 import com.comet.auctionfinder.model.Board;
-import com.comet.auctionfinder.model.FileRequestDto;
 import com.comet.auctionfinder.model.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,9 +8,7 @@ import lombok.Data;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import java.util.ArrayList;
-import java.util.List;
 
 @Data
 @AllArgsConstructor

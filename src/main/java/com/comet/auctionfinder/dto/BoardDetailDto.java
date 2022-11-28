@@ -1,7 +1,6 @@
 package com.comet.auctionfinder.dto;
 
 import com.comet.auctionfinder.model.Board;
-import com.comet.auctionfinder.model.FileResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

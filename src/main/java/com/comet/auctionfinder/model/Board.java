@@ -1,5 +1,6 @@
 package com.comet.auctionfinder.model;
 
+import com.comet.auctionfinder.dto.FileRequestDto;
 import lombok.*;
 
 import javax.persistence.*;

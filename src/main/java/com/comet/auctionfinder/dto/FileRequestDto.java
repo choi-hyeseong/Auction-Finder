@@ -1,6 +1,8 @@
-package com.comet.auctionfinder.model;
+package com.comet.auctionfinder.dto;
 
 
+import com.comet.auctionfinder.model.Board;
+import com.comet.auctionfinder.model.FileEntity;
 import lombok.Data;
 
 @Data

@@ -1,9 +1,6 @@
 package com.comet.auctionfinder.service;
 
-import com.comet.auctionfinder.dto.BoardDetailDto;
-import com.comet.auctionfinder.dto.BoardListDto;
-import com.comet.auctionfinder.dto.BoardRequestDto;
-import com.comet.auctionfinder.dto.ReplyRequestDto;
+import com.comet.auctionfinder.dto.*;
 import com.comet.auctionfinder.enums.UserRole;
 import com.comet.auctionfinder.model.*;
 import com.comet.auctionfinder.repository.BoardRepository;
@@ -17,7 +14,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 

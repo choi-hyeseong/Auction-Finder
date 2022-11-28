@@ -16,6 +16,8 @@ public class MemberHeart extends BaseTimeEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    //어처피 delete는 안먹힘 그래서 걍 all 써도 되는듯..
+
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "member_id")
     private Member member;

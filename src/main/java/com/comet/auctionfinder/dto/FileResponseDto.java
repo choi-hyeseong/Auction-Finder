@@ -1,5 +1,6 @@
-package com.comet.auctionfinder.model;
+package com.comet.auctionfinder.dto;
 
+import com.comet.auctionfinder.model.FileEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
