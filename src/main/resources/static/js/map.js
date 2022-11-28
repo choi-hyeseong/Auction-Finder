@@ -307,6 +307,8 @@ function loadMap(container, options) {
             value = query[i].replace("value=", "");
     }
     if (court !== undefined && value !== undefined) {
+        court = decodeURIComponent(court);
+        value = decodeURIComponent(value)
         detailFind(court, value)
     }
     else {
