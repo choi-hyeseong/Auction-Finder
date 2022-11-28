@@ -2394,27 +2394,13 @@ header.masthead .h1, header.masthead h1 {
 
 .speech-bubble {
     position: relative;
-    background: rgba(107, 114, 142, 90%);
+    background: rgba(255, 255, 255, 90%);
     border-radius: 1em;
 }
 
-.speech-bubble:after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    width: 0;
-    height: 0;
-    border: 22px solid transparent;
-    border-top-color: rgba(107, 114, 142, 90%);
-    border-bottom: 0;
-    border-left: 0;
-    margin-left: -11px;
-    margin-bottom: -22px;
-}
 
 hr.solid {
-    border-top: 1px solid #ffffff;
+    border-top: 1px solid #000000;
     margin: 0 0 5px;
 }
 
@@ -2474,7 +2460,7 @@ input:checked[type="checkbox"]:after{
 }
 
 .focus {
-    border: 3px solid black
+    border: 3px solid #fe0f42
 }
 
 .jumbo {

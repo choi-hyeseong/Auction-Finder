@@ -25,4 +25,11 @@ public class Reply extends BaseTimeEntity {
     @ManyToOne
     @JoinColumn(name = "board_id")
     private Board board;
+
+    public void removeBoard() {
+        if (board != null) {
+            board.getReplyList().remove(this);
+            setBoard(null);
+        }
+    }
 }

@@ -6,6 +6,7 @@ import com.comet.auctionfinder.dto.MemberUpdateDto;
 import com.comet.auctionfinder.enums.UserRole;
 import com.comet.auctionfinder.model.Board;
 import com.comet.auctionfinder.model.Member;
+import com.comet.auctionfinder.model.Reply;
 import com.comet.auctionfinder.repository.BoardRepository;
 import com.comet.auctionfinder.repository.MemberRepository;
 import com.comet.auctionfinder.repository.ReplyRepository;
@@ -83,6 +84,8 @@ public class MemberService {
         Member member = repository.findByUserId(userId).orElseThrow();
         //지울시 하트는 삭제됨
         List<Board> board = boardRepository.findAllByAuthor_Id(member.getId());
+        List<Reply> replyList = replyRepository.findAllByMember_Id(member.getId());
+        replyList.forEach(Reply::removeBoard);
         //멤버랑 보드 삭제시 지워지는거
         //멤버 => heart
         //보드 => reply, file

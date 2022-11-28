@@ -109,7 +109,7 @@ function deleteBoard(obj) {
 function addContent(res) {
     for (let i = 0; i < res.length; i++) {
         let additional = "";
-        additional += "<div class=\"col-md-6 jumbo\" style='margin-top: 10px; margin-bottom: 10px; background-color: #F5F5F5'>"
+        additional += "<div class=\"col-md-6 jumbo\" style='margin-top: 10px; margin-bottom: 10px; background-color: #F5F5F5' onclick='location.href = \"/map?court=" + res[i].court + "&value=" + res[i].auctionValue + "\"'>"
         additional += "<div class=\"h-100 p-5 bg-light border rounded-3\" style='position:relative;'>"
         additional += "<p>" + res[i].court + "</p>"
         additional += "<p>" + res[i].auctionValue + "</p>"

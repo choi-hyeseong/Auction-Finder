@@ -9,19 +9,75 @@ let index = -1;
 let startX, startY, startOverlayPoint, customoverlay;
 let parsedData = [];
 
-
 $("#loading").hide();
+
+function detailFind(court, value) {
+    $.ajax({
+        url: "api/auction/detail?court=" + court + "&value=" + value,
+        async: false,
+        type: "get",
+        contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+        success: (response) => {
+            let type;
+            let res = response.areas[0].toString().split(" ");
+            geocoder.addressSearch(res[1], (result, status) => {
+                console.log(response)
+                if (status === "OK") {
+                    let img;
+                    let cls = "";
+                    if (focus)
+                        cls = "focus\"";
+                    type = res[0].replace("(", "").replace(")", "").replace(/[0-9]/gi, "");
+                    switch (type) {
+                        case "임야":
+                        case "대지":
+                        case "전답":
+                            img = "<img src='../assets/img/field.png' style='width: 50px; height: 50px'>";
+                            break;
+                        case "기타":
+                            img = "<img src='../assets/img/building.png' style='width: 50px; height: 50px'>";
+                            break
+                        default:
+                            img = "<img src='../assets/img/house.png' style='width: 50px; height: 50px'>";
+                            break;
+                    }
+                    let overPosition = new kakao.maps.LatLng(result[0].y, result[0].x); //인포윈도우 표시 위치입니다
+                    let overContent = '<div class="speech-bubble ' + cls + '" style="width: 130%; padding: 7px; text-align: center" onclick="onMarkerClick(this)"><p style="color: #000000; margin-bottom: 5px">' + type + "</p><hr class='solid'>" + img + '<p style="visibility: hidden; width: 1px; height: 1px" id="mark-name">' + value + '</p></div>' // 인포윈도우에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
+                    let customOverlay = new kakao.maps.CustomOverlay({
+                        position: overPosition,
+                        content: overContent
+                    });
+// 커스텀 오버레이를 지도에 표시합니다
+                    markers.push(customOverlay);
+                    customOverlay.setMap(map);
+                    map.setCenter(overPosition);
+                    parsedData.push({court: court, auctionNumber: value, type: type, area: [{first: response.areas[0], second: ""}], extra: response.extra, checkValue: response.checkValue, minimumValue: response.minimumValue, part: response.part.split("|")[1].trim(), until: response.endDate, status: response.dates[0].result});
+                    $(".map-info").hide();
+                }
+            })
+        },
+        error: (error) => {
+            console.log(error);
+        }
+    })
+}
+
 search.keyup((e) => {
     let input = search.val();
     if (e.keyCode === 13) {
-        if (input.includes(" ")) {
+        if (input.includes(" ") && (!input.includes("지원") && !input.includes("법원"))) {
             let res = input.split(" ");
             let city = ""
             for (let i = 1; i < res.length; i++) {
                 city += res[i] + " "
             }
             areaSearch(res[0], city)
-        } else {
+        }
+        else {
+            let res = input.split(" ");
+            let court = res[0];
+            let value = res[1];
+            detailFind(court, value);
             //특정 매물 검색
         }
     } else if (e.keyCode === 38 || e.keyCode === 40) {
@@ -92,6 +148,7 @@ $("#map").on("click", () => $(".suggestions").empty());
 //비동기로 처리하는 이유 -> 로딩 시간이 너무 오래걸림.
 function areaSearch(pro, city) {
     $("#loading").show();
+    let center;
     $.ajax({
         url: "http://127.0.0.1:8080/api/auction?pro=" + pro + " &city=" + city,
         async: true,
@@ -118,6 +175,10 @@ function areaSearch(pro, city) {
                         for (let k = 0; k < res[i].area.length; k++) {
                             loadMarker(res[i].area[k].first, res[i].type, res[i].auctionNumber, focused);
                         }
+                        if (i === 0)
+                            center = map.getCenter()
+                        else
+                            map.setCenter(center)
                     }
                 },
                 error: (request, status, error) => {
@@ -127,6 +188,10 @@ function areaSearch(pro, city) {
                         for (let k = 0; k < res[i].area.length; k++) {
                             loadMarker(res[i].area[k].first, res[i].type, res[i].auctionNumber, false);
                         }
+                        if (i === 0)
+                            center = map.getCenter()
+                        else
+                            map.setCenter(center)
                     }
                 }
             })
@@ -232,13 +297,27 @@ function loadMap(container, options) {
     let zoomControl = new kakao.maps.ZoomControl();
     map.addControl(zoomControl, kakao.maps.ControlPosition.RIGHT);
     geocoder = new kakao.maps.services.Geocoder();
-    geocoder.coord2RegionCode(map.getCenter().getLng(), map.getCenter().getLat(), (result, status) => {
-        if (status === "OK") {
-            let arr = result[0].address_name.split(" ");
-            areaSearch(arr[0], arr[1])
-            console.log(result[0].address_name);
-        }
-    })
+    let query = location.search.toString().replace("?", "").split("&");
+    let court;
+    let value;
+    for (let i = 0; i < query.length; i++) {
+        if (query[i].includes("court="))
+            court = query[i].replace("court=", "");
+        else if (query[i].includes("value="))
+            value = query[i].replace("value=", "");
+    }
+    if (court !== undefined && value !== undefined) {
+        detailFind(court, value)
+    }
+    else {
+        geocoder.coord2RegionCode(map.getCenter().getLng(), map.getCenter().getLat(), (result, status) => {
+            if (status === "OK") {
+                let arr = result[0].address_name.split(" ");
+                areaSearch(arr[0], arr[1])
+                console.log(result[0].address_name);
+            }
+        })
+    }
     let content = document.createElement('div');
     content.style.padding = "1rem";
     content.className = 'overlay map-info';
@@ -267,6 +346,7 @@ function loadMap(container, options) {
     kakao.maps.event.addListener(map, 'click', () => {
         $(".map-info").hide();
     })
+
 }
 
 function loadMarker(location, type, name, focus) {
@@ -292,7 +372,7 @@ function loadMarker(location, type, name, focus) {
                     break;
             }
             let overPosition = new kakao.maps.LatLng(result[0].y, result[0].x); //인포윈도우 표시 위치입니다
-            let overContent = '<div class="speech-bubble ' + cls + '" style="width: 130%; padding: 7px; text-align: center" onclick="onMarkerClick(this)"><p style="color: #ffffff; margin-bottom: 5px">' + type + "</p><hr class='solid'>" + img + '<p style="visibility: hidden; width: 1px; height: 1px" id="mark-name">' + name + '</p></div>' // 인포윈도우에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
+            let overContent = '<div class="speech-bubble ' + cls + '" style="width: 130%; padding: 7px; text-align: center" onclick="onMarkerClick(this)"><p style="color: #000000; margin-bottom: 5px">' + type + "</p><hr class='solid'>" + img + '<p style="visibility: hidden; width: 1px; height: 1px" id="mark-name">' + name + '</p></div>' // 인포윈도우에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
             let customOverlay = new kakao.maps.CustomOverlay({
                 position: overPosition,
                 content: overContent

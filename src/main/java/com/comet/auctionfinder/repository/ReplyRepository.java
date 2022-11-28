@@ -8,4 +8,6 @@ import java.util.List;
 public interface ReplyRepository extends JpaRepository<Reply, Long> {
 
     List<Reply> deleteAllByMember_Id(long id);
+
+    List<Reply> findAllByMember_Id(long id);
 }
