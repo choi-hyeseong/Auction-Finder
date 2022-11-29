@@ -66,7 +66,15 @@ search.keyup((e) => {
     let input = search.val();
     if (e.keyCode === 13) {
         if (input.includes(" ") && (!input.includes("지원") && !input.includes("법원"))) {
-            let res = input.split(" ");
+            let result;
+            let children = $(".suggestions").children();
+            if (children.length >= 1 && !children.get(0).innerText.includes("검색")) {
+                result = children.get(0).innerText;
+                search.val(result)
+            }
+            else
+                result = input;
+            let res = result.split(" ");
             let city = ""
             for (let i = 1; i < res.length; i++) {
                 city += res[i] + " "
@@ -203,6 +211,16 @@ function areaSearch(pro, city) {
     })
 }
 
+function onShareClick() {
+    let info = $("#info-value").text().toString();
+    if (!info.includes("null")) {
+        let firstSplit = info.split("(");
+        let court = firstSplit[1].split(",")[0].trim();
+        let auctionValue = firstSplit[0].trim();
+        navigator.clipboard.writeText(location.origin + location.pathname + "?court=" + court + "&value=" + auctionValue).then(() => {alert("주소가 클립보드에 저장되었습니다.")})
+    }
+}
+
 function onHeartClick(obj) {
     //하트를 클릭했으면 현재 창에 정보가 있는상태
     let check = obj.checked //눌러서 변화된 상태
@@ -333,7 +351,7 @@ function loadMap(container, options) {
     innerDiv += "<p class='info-normal' style='color: #ffffff; font-size: 14pt; font-weight: bold'>기간</p>"
     innerDiv += "<p class='info-normal' style='color: #ffffff; font-size: 10pt'>2022.12.25까지. (유찰 x회, 경매 x계)</p>"
     innerDiv += "<input type='checkbox' style='margin-top: 2px; margin-right: 10px' id='heart' onchange='onHeartClick(this)'>";
-    innerDiv += "<button style='width: 50px; height: 50px; background: none; border: none; position:relative; bottom: 3px'><i class=\"far fa-share-square fa-2x\"></i></button>";
+    innerDiv += "<button style='width: 50px; height: 50px; background: none; border: none; position:relative; bottom: 3px' onclick='onShareClick()'><i class=\"far fa-share-square fa-2x\"></i></button>";
     content.insertAdjacentHTML('beforeend', innerDiv);
     customoverlay = new kakao.maps.CustomOverlay({
         map: map,
