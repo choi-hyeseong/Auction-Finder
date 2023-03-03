@@ -8,24 +8,25 @@ window.addEventListener('load', () => {
             if (form.checkValidity() === false) {
                 event.preventDefault();
                 event.stopPropagation();
-            } else {
+            }
+            else {
                 let data = {
                     userId: $("#name").val(),
                     password: $("#password").val(),
-                    nickName: $("#nickname").val(),
+                    $.ajax({
+                        url: "/api/user/register",
+                        async: true,
+                        type: "post",
+                        contentType: "application/json",
+                        data: JSON.stringify(data),
+                        success: () => {
+                            console.log("created!")
+                            alert("회원가입이 완료되었습니다. 로그인 페이지로 이동합니다.")
+                            location.href = "../login";
+                        },    nickName: $("#nickname").val(),
                     email: $("#email").val()
                 }
-                $.ajax({
-                    url: "/api/user/register",
-                    async: true,
-                    type: "post",
-                    contentType: "application/json",
-                    data: JSON.stringify(data),
-                    success: () => {
-                        console.log("created!")
-                        alert("회원가입이 완료되었습니다. 로그인 페이지로 이동합니다.")
-                        location.href = "../login";
-                    },
+
                     error: (res) => {
                         let response = res.responseJSON;
                         let errors = response.message.toString().split("\n");
